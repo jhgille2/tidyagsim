@@ -53,7 +53,8 @@ planning horizon.
 }
 \examples{
 \dontrun{
-spec <- breeding_program("examples/conventional.json", `pyt.reps` = tune(), `pyt.locations` = tune())
+spec <- breeding_program("examples/conventional.json",
+                         `pyt.reps` = tune(), `pyt.locations` = tune())
 res <- tune_grid(spec, sim_replicates(5), grid = 8,
                  metrics = sim_metric_set(release_gain, plots))
 }

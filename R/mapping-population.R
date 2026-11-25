@@ -115,7 +115,7 @@ sim_parameters.mapping_population <- function(object, ...) {
 
 #' @export
 sim_default_metrics.mapping_population <- function(object) {
-  sim_metric_set(power, false_positive, location_error, lines, cost, years)
+  sim_metric_set("power", "false_positive", "location_error", "lines", "cost", "years")
 }
 
 #' @export

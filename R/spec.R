@@ -104,7 +104,7 @@ tunable.sim_spec <- function(x, ...) {
 #' @param ... Not used.
 #' @return A dials `parameters` object.
 #' @examples
-#' spec <- mapping_population(type = "RIL", lines = tune(), selfing = tune())
+#' spec <- mapping_population(type = "RIL", lines = tune(), generation = tune())
 #' params <- extract_parameter_set_dials(spec)
 #' params
 #' update(params, lines = n_lines(c(100, 400)))

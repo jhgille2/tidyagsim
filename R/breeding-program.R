@@ -42,7 +42,8 @@ breedsim_modules <- function() {
 #' @return A `breeding_program` simulation spec.
 #' @examples
 #' \dontrun{
-#' spec <- breeding_program("examples/conventional.json", `pyt.reps` = tune(), `pyt.locations` = tune())
+#' spec <- breeding_program("examples/conventional.json",
+#'                          `pyt.reps` = tune(), `pyt.locations` = tune())
 #' res <- tune_grid(spec, sim_replicates(5), grid = 8,
 #'                  metrics = sim_metric_set(release_gain, plots))
 #' }
@@ -136,8 +137,8 @@ sim_check.breeding_program <- function(object, args, ...) {
 
 #' @export
 sim_default_metrics.breeding_program <- function(object) {
-  if (!is.null(object$start_year)) return(sim_metric_set(gain_per_year, release_gain, cost))
-  sim_metric_set(release_gain, plots, cost)
+  if (!is.null(object$start_year)) return(sim_metric_set("gain_per_year", "release_gain", "cost"))
+  sim_metric_set("release_gain", "plots", "cost")
 }
 
 #' @export

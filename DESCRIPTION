@@ -26,7 +26,6 @@ Imports:
     stats,
     tibble (>= 3.0.0),
     utils,
-    vctrs,
     generics
 Suggests:
     future,

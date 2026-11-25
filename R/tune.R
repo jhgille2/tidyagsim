@@ -24,7 +24,7 @@ param_size <- function(p) {
 space_filling <- function(params, size) {
   ns <- asNamespace("dials")
   if (exists("grid_space_filling", envir = ns)) {
-    return(dials::grid_space_filling(params, size = size, type = "max_entropy"))
+    return(getExportedValue("dials", "grid_space_filling")(params, size = size, type = "max_entropy"))
   }
   if (all(vapply(params$object, inherits, logical(1), "quant_param"))) {
     return(dials::grid_max_entropy(params, size = size))
@@ -58,6 +58,7 @@ sim_grid <- function(params, grid = NULL, seed = 1) {
         space_filling(params, size)
       }
     })
+    grid <- grid[do.call(order, unname(as.list(grid))), , drop = FALSE]
   }
   grid <- tibble::as_tibble(grid)
   missing <- setdiff(ids, names(grid))

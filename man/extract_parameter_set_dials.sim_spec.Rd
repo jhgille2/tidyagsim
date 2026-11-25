@@ -20,7 +20,7 @@ the spec. Change ranges with \code{update()}, exactly as in tidymodels, and pass
 the result to a tuner as \code{param_info}.
 }
 \examples{
-spec <- mapping_population(type = "RIL", lines = tune(), selfing = tune())
+spec <- mapping_population(type = "RIL", lines = tune(), generation = tune())
 params <- extract_parameter_set_dials(spec)
 params
 update(params, lines = n_lines(c(100, 400)))
