@@ -1,27 +1,31 @@
 Package: tidyagsim
-Title: Tidymodels-Style Tuning and Replication for Agricultural Simulations
+Title: Tidymodels-Style Tuning and Replication for 'AlphaSimR' and Other Breeding Simulations
 Version: 0.1.0
 Authors@R: c(
     person("Jay", "Gillenwater", role = c("aut", "cre"),
            email = "55106933+jhgille2@users.noreply.github.com"))
-Description: Brings the grammar of the 'tidymodels' packages to stochastic
-    simulation studies in plant breeding. Mark the arguments of a simulation
+Description: Extends 'AlphaSimR' with the grammar of the 'tidymodels'
+    packages, so that plant breeding simulation studies are set up like a
+    model-tuning job. Write a breeding scheme once, mark its design choices
     with tune(), describe replicate seeds and assumption scenarios, choose a
     metric set, and let grid search, racing or Bayesian optimization run the
     experiment without enumerating every combination by hand. Results are tidy
-    tibbles with Monte Carlo standard errors, and helpers such as show_best()
-    and select_by_one_std_err() pick designs. Includes a fast simulator for
-    QTL mapping populations (F2, recombinant inbred lines, BCsFt, nested
-    association mapping, advanced-backcross NAM and MAGIC) and an engine for
-    'breedsim' breeding-program flowcharts.
+    tibbles with Monte Carlo standard errors, and helpers such as show_best(),
+    select_by_one_std_err() and pareto_front() pick designs. Includes a
+    ready-made inbred line pipeline, a fast simulator for QTL mapping
+    populations (F2, recombinant inbred lines, BCsFt, nested association
+    mapping, advanced-backcross NAM and MAGIC), and engines for any R function
+    and for 'breedsim' breeding-program flowcharts.
 License: MIT + file LICENSE
 URL: https://github.com/jhgille2/tidyagsim, https://jhgille2.github.io/tidyagsim/
 BugReports: https://github.com/jhgille2/tidyagsim/issues
 Depends: R (>= 4.1.0)
 Imports:
+    AlphaSimR (>= 1.5.0),
     cli,
     dials (>= 1.0.0),
     hardhat (>= 1.2.0),
+    methods,
     rlang (>= 1.0.0),
     stats,
     tibble (>= 3.0.0),

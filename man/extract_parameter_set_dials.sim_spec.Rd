@@ -4,12 +4,15 @@
 \alias{extract_parameter_set_dials.sim_spec}
 \title{Extract the parameter set of a spec}
 \usage{
-\method{extract_parameter_set_dials}{sim_spec}(x, ...)
+\method{extract_parameter_set_dials}{sim_spec}(x, ..., grid = NULL)
 }
 \arguments{
 \item{x}{A simulation spec.}
 
 \item{...}{Not used.}
+
+\item{grid}{Optional data frame of designs; tuned arguments without a
+default range take theirs from its values.}
 }
 \value{
 A dials \code{parameters} object.

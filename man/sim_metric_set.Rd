@@ -21,7 +21,7 @@ optimize and selection helpers rank by unless told otherwise.
 Built-in metrics: \code{power}, \code{other_peaks}, \code{location_error},
 \code{support_interval}, \code{peak_lod}, \code{realized_pve}, \code{threshold} (mapping);
 \code{release_gain}, \code{gain_per_year}, \code{gain_per_cost}, \code{expected_heterozygosity},
-\code{genetic_variance} (breeding programs); \code{lines}, \code{plots}, \code{genotyped},
+\code{genetic_variance}, \code{accuracy} (breeding programs); \code{lines}, \code{plots}, \code{genotyped},
 \code{crosses}, \code{cost}, \code{years}, \code{generations} (resources).
 }
 \examples{

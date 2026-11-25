@@ -10,25 +10,41 @@ navbar:
 
 articles:
 - title: Get started
-  navbar: ~
+  navbar: Get started
+  desc: New to breeding simulation? Read these in order.
   contents:
   - tidyagsim
-- title: Case studies
-  navbar: Case studies
+  - articles/why-simulate
+  - articles/replicates
+  - articles/choosing-designs
+- title: Breeding problems
+  navbar: Breeding problems
+  desc: Common plant breeding questions, each answered with one simulation study.
   contents:
+  - articles/yield-trials
+  - articles/gene-pyramiding
   - mapping-design
 
 reference:
 - title: Simulation specs
   desc: What to simulate. Set any argument to `tune()`.
   contents:
+  - alphasim_program
+  - line_pipeline
   - mapping_population
-  - breeding_program
   - sim_function
+  - breeding_program
   - set_args
   - set_engine
   - finalize_sim
   - is_tune
+- title: AlphaSimR helpers
+  desc: Founders, and turning a run into breeding metrics.
+  contents:
+  - asr_founders
+  - asr_tracker
+  - asr_summary
+  - collect_trajectories
 - title: Parameters
   desc: dials parameter objects and ranges.
   contents:
