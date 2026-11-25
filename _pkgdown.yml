@@ -1,0 +1,92 @@
+url: https://jhgille2.github.io/tidyagsim/
+template:
+  bootstrap: 5
+  bootswatch: flatly
+
+navbar:
+  structure:
+    left: [intro, reference, articles, news]
+    right: [search, github]
+
+articles:
+- title: Get started
+  navbar: ~
+  contents:
+  - tidyagsim
+- title: Case studies
+  navbar: Case studies
+  contents:
+  - mapping-design
+
+reference:
+- title: Simulation specs
+  desc: What to simulate. Set any argument to `tune()`.
+  contents:
+  - mapping_population
+  - breeding_program
+  - sim_function
+  - set_args
+  - set_engine
+  - finalize_sim
+  - is_tune
+- title: Parameters
+  desc: dials parameter objects and ranges.
+  contents:
+  - extract_parameter_set_dials.sim_spec
+  - sim_params
+  - sim_param
+- title: Replicates and scenarios
+  contents:
+  - sim_replicates
+  - sim_scenarios
+- title: Metrics
+  contents:
+  - sim_metric_set
+  - sim_metric
+- title: Tuning
+  contents:
+  - tune_grid
+  - tune_race
+  - tune_bayes
+  - fit_resamples
+  - control_sim
+- title: Running on a cluster
+  contents:
+  - write_slurm_array
+  - sim_shard
+- title: Results
+  contents:
+  - collect_metrics
+  - show_best
+  - pareto_front
+  - compare_designs
+  - collect_notes
+  - collect_outcomes
+  - autoplot.sim_results
+- title: Comparing several specs
+  contents:
+  - sim_set
+  - sim_map
+  - rank_results
+  - extract_sim_result
+- title: Mapping population engine
+  contents:
+  - sim_genetic_map
+  - qtl_scan
+  - simulate_mapping_replicate
+- title: Extending tidyagsim
+  desc: Write a new simulator by implementing these generics.
+  contents:
+  - sim_spec
+  - sim_simulate
+  - sim_check
+  - sim_parameters
+  - tune_args.sim_spec
+  - tunable.sim_spec
+  - resolve_args
+  - sim_arg_names
+  - sim_default_metrics
+  - sim_grid
+- title: Re-exported
+  contents:
+  - reexports

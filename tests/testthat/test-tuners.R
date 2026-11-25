@@ -124,3 +124,47 @@ test_that("autoplot draws marginals, fronts and races", {
                  metrics = toy_metrics())
   expect_s3_class(ggplot2::autoplot(set), "ggplot")
 })
+
+test_that("sharded runs fill a shared cache that a full run collects", {
+  dir <- tempfile("shards")
+  calls <- 0
+  f <- function(x, seed) {
+    calls <<- calls + 1
+    list(y = x)
+  }
+  spec <- sim_function(f, x = tune(), params = list(x = sim_param(c(0, 6))))
+  g <- data.frame(x = 1:4)
+  m <- sim_metric_set(sim_metric("y"))
+  a <- tune_grid(spec, 2, grid = g, metrics = m, control = control_sim(cache = dir, shard = c(1, 2)))
+  b <- tune_grid(spec, 2, grid = g, metrics = m, control = control_sim(cache = dir, shard = c(2, 2)))
+  expect_equal(nrow(a$raw) + nrow(b$raw), 8)
+  expect_equal(calls, 8)
+  full <- tune_grid(spec, 2, grid = g, metrics = m, control = control_sim(cache = dir))
+  expect_equal(nrow(full$raw), 8)
+  expect_equal(calls, 8)
+  expect_error(control_sim(shard = c(1, 2)), "cache")
+})
+
+test_that("Slurm array scripts are written", {
+  script <- tempfile(fileext = ".R")
+  writeLines("1", script)
+  dir <- tempfile("slurm")
+  write_slurm_array(script, dir, tasks = 10, cluster = "atlas", account = "soy", max_concurrent = 4)
+  run <- readLines(file.path(dir, "run.sbatch"))
+  expect_true("#SBATCH --array=1-10%4" %in% run)
+  expect_true("#SBATCH --account=soy" %in% run)
+  expect_error(write_slurm_array(script, dir, 2, cluster = "atlas"), "account")
+  withr_env <- Sys.getenv(c("SLURM_ARRAY_TASK_ID", "TIDYAGSIM_TASKS"))
+  Sys.setenv(SLURM_ARRAY_TASK_ID = "3", TIDYAGSIM_TASKS = "10")
+  expect_equal(sim_shard(), c(3L, 10L))
+  Sys.unsetenv(c("SLURM_ARRAY_TASK_ID", "TIDYAGSIM_TASKS"))
+  expect_null(sim_shard())
+})
+
+test_that("collect_outcomes unpacks extra outcomes", {
+  spec <- small_mapping(type = "RIL", lines = 60, threshold = 3)
+  res <- fit_resamples(spec, 2, metrics = sim_metric_set(power), control = control_sim(save_outcomes = TRUE))
+  out <- collect_outcomes(res)
+  expect_true(all(c("qtl_chr", "qtl_pos", "segregating_markers") %in% names(out)))
+  expect_error(collect_outcomes(fit_resamples(spec, 1, metrics = sim_metric_set(power))), "save_outcomes")
+})

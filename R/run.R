@@ -13,15 +13,23 @@
 #' @param stop_on_error Stop at the first failing simulation instead of
 #'   recording a note and carrying on.
 #' @param save_outcomes Keep every outcome the simulator reports (not only the
-#'   metrics) in a list column `.outcome`.
+#'   metrics) in a list column `.outcome`; see [collect_outcomes()].
+#' @param shard `NULL`, or `c(task, n_tasks)` to run only every `n_tasks`-th
+#'   design/scenario batch, starting at `task`. Used with `cache` to split a
+#'   [tune_grid()] across a Slurm job array; [sim_shard()] reads the task from
+#'   the environment. A run without `shard` then collects everything from the cache.
 #' @return A `control_sim` object.
 #' @examples
 #' control_sim(verbose = TRUE, cache = tempfile("study-cache"))
 #' @export
 control_sim <- function(verbose = FALSE, parallel = FALSE, cache = NULL, stop_on_error = FALSE,
-                        save_outcomes = FALSE) {
+                        save_outcomes = FALSE, shard = NULL) {
+  if (!is.null(shard)) {
+    if (length(shard) != 2 || shard[1] < 1 || shard[1] > shard[2]) abort("`shard` is c(task, n_tasks).")
+    if (is.null(cache)) abort("Sharded runs need a shared `cache` directory to collect results.")
+  }
   structure(list(verbose = verbose, parallel = parallel, cache = cache, stop_on_error = stop_on_error,
-                 save_outcomes = save_outcomes), class = "control_sim")
+                 save_outcomes = save_outcomes, shard = shard), class = "control_sim")
 }
 
 new_runner <- function(spec, metrics, control) {
@@ -48,9 +56,13 @@ run_designs <- function(runner, configs, scenarios, reps) {
   jobs <- list()
   rows <- list()
   ids <- setdiff(names(configs), ".config")
+  shard <- runner$control$shard
+  batch <- 0L
   for (i in seq_len(nrow(configs))) {
     values <- lapply(as.list(configs[i, ids, drop = FALSE]), function(v) if (is.factor(v)) as.character(v) else v)
     for (sc in scenarios) {
+      batch <- batch + 1L
+      if (!is.null(shard) && (batch - 1L) %% shard[2] != shard[1] - 1L) next
       args <- resolve_args(runner$spec, values, sc$values)
       reason <- sim_check(runner$spec, args)
       if (!is.null(reason)) {
@@ -138,7 +150,7 @@ bind_rows_list <- function(rows) {
   cols <- names(rows[[1]])
   out <- lapply(cols, function(col) {
     v <- lapply(rows, `[[`, col)
-    if (col == ".outcome") return(v)
+    if (col == ".outcome") return(lapply(v, `[[`, 1))
     unlist(v, use.names = FALSE)
   })
   names(out) <- cols

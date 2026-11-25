@@ -29,11 +29,10 @@ Imports:
     vctrs,
     generics
 Suggests:
+    future,
     future.apply,
     ggplot2 (>= 3.4.0),
-    jsonlite,
     knitr,
-    qtl,
     reticulate (>= 1.28),
     rmarkdown,
     testthat (>= 3.0.0)

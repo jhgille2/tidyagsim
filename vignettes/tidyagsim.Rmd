@@ -1,0 +1,139 @@
+---
+title: "Getting started with tidyagsim"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting started with tidyagsim}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 7, fig.height = 4.5)
+```
+
+tidyagsim brings the grammar of [tidymodels](https://www.tidymodels.org/) to
+stochastic simulation studies. If you have tuned a model with `tune_grid()`,
+you already know how to run a simulation experiment with it:
+
+| tidymodels | tidyagsim | What it holds |
+|---|---|---|
+| parsnip model spec | simulation spec: `mapping_population()`, `breeding_program()`, `sim_function()` | the simulator and its arguments |
+| `tune()` | `tune()` | "let the tuner choose this argument" |
+| dials parameters | `extract_parameter_set_dials()`, `n_lines()`, `filial_generation()`, ... | ranges of tuned arguments |
+| rsample resamples | `sim_replicates()`, `sim_scenarios()` | paired random seeds and assumption scenarios |
+| yardstick `metric_set()` | `sim_metric_set()` | what to measure, and which direction is better |
+| `tune_grid()`, `tune_race_anova()`, `tune_bayes()` | `tune_grid()`, `tune_race()`, `tune_bayes()` | how to search |
+| `collect_metrics()`, `show_best()`, `select_by_one_std_err()` | same names, plus `pareto_front()`, `compare_designs()` | tidy results |
+| workflowsets | `sim_set()`, `sim_map()`, `rank_results()` | comparing several specs at once |
+
+```{r setup}
+library(tidyagsim)
+```
+
+## A simulation spec
+
+A spec records the arguments of one simulator. The simplest is any R
+function that takes its arguments and a `seed` and returns a named list of
+outcomes. Here is a toy "trial" whose yield peaks at a seeding rate of 3:
+
+```{r}
+trial <- sim_function(
+  function(rate, noise, seed) {
+    list(yield = 10 - (rate - 3)^2 + rnorm(1, sd = noise), cost = 20 * rate)
+  },
+  rate = tune(), noise = 1,
+  params = list(rate = sim_param(c(0, 6), type = "double", label = "Seeding rate"))
+)
+trial
+```
+
+`tune()` marks `rate` for tuning; `noise` stays fixed. The parameter set is a
+dials object, so ranges change with `update()` exactly as in tidymodels:
+
+```{r}
+extract_parameter_set_dials(trial)
+```
+
+## Replicates are paired seeds
+
+In a simulation, the unit of replication is a random seed. Every design runs
+on the *same* seeds (common random numbers), so differences between designs
+are paired and much less noisy than independent runs.
+
+```{r}
+reps <- sim_replicates(20)
+reps
+```
+
+## Metrics have directions
+
+```{r}
+metrics <- sim_metric_set(sim_metric("yield", "maximize"), cost)
+metrics
+```
+
+`cost` is built in (minimize); `yield` is defined on the spot.
+
+## Tune
+
+```{r}
+res <- tune_grid(trial, reps, grid = 7, metrics = metrics)
+res
+collect_metrics(res)
+```
+
+Every number comes with its Monte Carlo standard error. Pick designs with the
+usual helpers:
+
+```{r}
+show_best(res, metric = "yield", n = 3)
+# The cheapest design within one standard error of the best yield:
+select_by_one_std_err(res, cost, metric = "yield")
+# Designs no other design beats on both yield and cost:
+pareto_front(res)
+```
+
+```{r, fig.alt = "Yield and cost against seeding rate, with standard error bars."}
+library(ggplot2)
+autoplot(res)
+```
+
+## Scenarios: robust to what you assumed?
+
+Some inputs are not choices but assumptions. Cross them into scenarios and
+every design is run in every scenario:
+
+```{r}
+noisy <- sim_replicates(20, scenarios = sim_scenarios(noise = c(0.5, 3)))
+res_sc <- tune_grid(trial, noisy, grid = 5, metrics = metrics)
+collect_metrics(res_sc) |> subset(.metric == "yield")
+```
+
+## Smarter searches
+
+`tune_race()` drops designs that are clearly worse after a few replicates, and
+`tune_bayes()` proposes new designs with a Gaussian process. Both answer the
+same questions as `tune_grid()` with fewer simulations. With constraints,
+`tune_bayes()` searches directly for, say, the cheapest design that keeps
+yield above 9:
+
+```{r}
+bo <- tune_bayes(trial, sim_replicates(10), metrics = sim_metric_set(cost, sim_metric("yield")),
+                 constraints = list(yield = 9), initial = 4, iter = 8)
+select_best(bo, metric = "cost", constraints = list(yield = 9))
+```
+
+## Real simulators
+
+* `mapping_population()` simulates QTL mapping populations (F2, RIL, BC*s*F*t*,
+  NAM, advanced-backcross NAM and MAGIC). See
+  `vignette("mapping-design")` for a full study.
+* `breeding_program()` runs a breedsim flowchart program with the AlphaSimR
+  engine; its fields are tuned by `"stage.field"` path.
+
+## Running big studies
+
+* `control_sim(parallel = TRUE)` runs design batches with the future
+  framework (`future::plan(future::multisession)` works on Windows).
+* `control_sim(cache = "my-cache")` saves each finished replicate, so a study
+  interrupted on a laptop or a cluster resumes where it stopped.

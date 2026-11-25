@@ -9,7 +9,8 @@ control_sim(
   parallel = FALSE,
   cache = NULL,
   stop_on_error = FALSE,
-  save_outcomes = FALSE
+  save_outcomes = FALSE,
+  shard = NULL
 )
 }
 \arguments{
@@ -26,7 +27,12 @@ the same study skips them, so an interrupted run resumes where it stopped.}
 recording a note and carrying on.}
 
 \item{save_outcomes}{Keep every outcome the simulator reports (not only the
-metrics) in a list column \code{.outcome}.}
+metrics) in a list column \code{.outcome}; see \code{\link[=collect_outcomes]{collect_outcomes()}}.}
+
+\item{shard}{\code{NULL}, or \code{c(task, n_tasks)} to run only every \code{n_tasks}-th
+design/scenario batch, starting at \code{task}. Used with \code{cache} to split a
+\code{\link[=tune_grid]{tune_grid()}} across a Slurm job array; \code{\link[=sim_shard]{sim_shard()}} reads the task from
+the environment. A run without \code{shard} then collects everything from the cache.}
 }
 \value{
 A \code{control_sim} object.
