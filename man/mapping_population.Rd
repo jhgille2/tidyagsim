@@ -128,8 +128,13 @@ reps sharpen line means.
 \section{Detection}{
 
 A replicate counts as a detection when the LOD within \code{window} cM of the
-QTL exceeds the genome-wide threshold (permutations, or \code{threshold}). A
-threshold exceedance on any other chromosome is a false positive. See
+QTL exceeds the genome-wide threshold (permutations, or \code{threshold}).
+\code{other_peaks} records whether any other chromosome also exceeds it. With a
+polygenic background these are mostly real background loci (linked small
+effects add up in segments that recombination has not broken), so
+\code{other_peaks} rises with population size; with \code{n_background = 0} it is a
+genome-wide false-positive rate, which the permutation threshold holds
+near \code{alpha}. See
 \code{\link[=qtl_scan]{qtl_scan()}} for the models.
 }
 

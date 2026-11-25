@@ -220,7 +220,7 @@ simulate_mapping_replicate <- function(args, seed, keep_data = FALSE) {
   plots <- n * a$locations * a$reps
   cost <- info$crosses * a$cross_cost + info$plant_generations * a$ssd_cost + n * a$genotype_cost +
     plots * a$plot_cost
-  out <- list(power = call$detected, false_positive = call$false_positive, location_error = call$location_error,
+  out <- list(power = call$detected, other_peaks = call$other_peaks, location_error = call$location_error,
               support_interval = call$support_interval, peak_lod = call$peak_lod, threshold = scan$threshold,
               realized_pve = stats::var(g_q) / stats::var(y), lines = n, plots = plots, genotyped = n,
               crosses = info$crosses, generations = info$generations,
@@ -331,7 +331,7 @@ call_qtl <- function(scan, qchr, qpos, window) {
   peak_lod <- if (any(near)) max(scan$lod[near]) else 0
   detected <- as.numeric(peak_lod > scan$threshold)
   others <- !on_chr
-  false_positive <- as.numeric(any(others) && max(scan$lod[others]) > scan$threshold)
+  other_peaks <- as.numeric(any(others) && max(scan$lod[others]) > scan$threshold)
   location_error <- NA_real_
   support <- NA_real_
   if (detected == 1) {
@@ -346,6 +346,6 @@ call_qtl <- function(scan, qchr, qpos, window) {
     while (right < length(chr_lod) && inside[right + 1]) right <- right + 1
     support <- chr_pos[right] - chr_pos[left]
   }
-  list(detected = detected, false_positive = false_positive, location_error = location_error,
+  list(detected = detected, other_peaks = other_peaks, location_error = location_error,
        support_interval = support, peak_lod = peak_lod)
 }

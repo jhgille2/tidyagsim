@@ -49,8 +49,13 @@ mapping_defaults <- function() {
 #'
 #' @section Detection:
 #' A replicate counts as a detection when the LOD within `window` cM of the
-#' QTL exceeds the genome-wide threshold (permutations, or `threshold`). A
-#' threshold exceedance on any other chromosome is a false positive. See
+#' QTL exceeds the genome-wide threshold (permutations, or `threshold`).
+#' `other_peaks` records whether any other chromosome also exceeds it. With a
+#' polygenic background these are mostly real background loci (linked small
+#' effects add up in segments that recombination has not broken), so
+#' `other_peaks` rises with population size; with `n_background = 0` it is a
+#' genome-wide false-positive rate, which the permutation threshold holds
+#' near `alpha`. See
 #' [qtl_scan()] for the models.
 #'
 #' @section Costs and time:
@@ -115,7 +120,7 @@ sim_parameters.mapping_population <- function(object, ...) {
 
 #' @export
 sim_default_metrics.mapping_population <- function(object) {
-  sim_metric_set("power", "false_positive", "location_error", "lines", "cost", "years")
+  sim_metric_set("power", "other_peaks", "location_error", "lines", "cost", "years")
 }
 
 #' @export

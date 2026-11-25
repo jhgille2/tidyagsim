@@ -19,7 +19,7 @@ ril_grid <- mapping_population(type = "RIL", lines = tune(), locations = tune(),
 grid <- expand.grid(lines = c(100L, 200L, 300L, 400L, 500L), locations = 1:3)
 scen <- sim_replicates(40, scenarios = sim_scenarios(qtl_pve = c(0.03, 0.05, 0.08)))
 out$grid <- tune_grid(ril_grid, scen, grid = grid,
-                      metrics = sim_metric_set(power, location_error, false_positive, plots, cost), control = ctrl)
+                      metrics = sim_metric_set(power, location_error, other_peaks, plots, cost), control = ctrl)
 
 # 3. Compare population types at the same number of lines --------------------------------------
 common <- list(lines = 300L, qtl_pve = 0.05)
@@ -40,7 +40,7 @@ grids <- list(
   MAGIC = expand.grid(founders = c("4", "8"), generation = c(4L, 6L), stringsAsFactors = FALSE)
 )
 out$types <- sim_map(types, "tune_grid", resamples = sim_replicates(40), grids = grids,
-                     metrics = sim_metric_set(power, location_error, support_interval, false_positive, years, cost),
+                     metrics = sim_metric_set(power, location_error, support_interval, other_peaks, years, cost),
                      control = ctrl, verbose = TRUE)
 
 # 4. Racing a larger space ---------------------------------------------------------------------

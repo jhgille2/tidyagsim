@@ -18,7 +18,7 @@ add custom ones made with \code{\link[=sim_metric]{sim_metric()}}. The first met
 optimize and selection helpers rank by unless told otherwise.
 }
 \details{
-Built-in metrics: \code{power}, \code{false_positive}, \code{location_error},
+Built-in metrics: \code{power}, \code{other_peaks}, \code{location_error},
 \code{support_interval}, \code{peak_lod}, \code{realized_pve}, \code{threshold} (mapping);
 \code{release_gain}, \code{gain_per_year}, \code{gain_per_cost}, \code{expected_heterozygosity},
 \code{genetic_variance} (breeding programs); \code{lines}, \code{plots}, \code{genotyped},

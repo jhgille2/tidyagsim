@@ -4,7 +4,7 @@ builtin_metrics <- function() {
   rows <- list(
     # Mapping populations
     c("power", "maximize", "QTL detection power", "proportion"),
-    c("false_positive", "minimize", "Replicates with a false QTL peak", "proportion"),
+    c("other_peaks", "minimize", "Replicates with a significant peak on another chromosome", "proportion"),
     c("location_error", "minimize", "Distance from peak to true QTL", "cM"),
     c("support_interval", "minimize", "1.5-LOD support interval", "cM"),
     c("peak_lod", "maximize", "LOD score at the QTL", "LOD"),
@@ -60,7 +60,7 @@ sim_metric <- function(name, direction = "maximize", fn = NULL, label = name, un
 #' add custom ones made with [sim_metric()]. The first metric is the one tuners
 #' optimize and selection helpers rank by unless told otherwise.
 #'
-#' Built-in metrics: `power`, `false_positive`, `location_error`,
+#' Built-in metrics: `power`, `other_peaks`, `location_error`,
 #' `support_interval`, `peak_lod`, `realized_pve`, `threshold` (mapping);
 #' `release_gain`, `gain_per_year`, `gain_per_cost`, `expected_heterozygosity`,
 #' `genetic_variance` (breeding programs); `lines`, `plots`, `genotyped`,

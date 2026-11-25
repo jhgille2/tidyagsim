@@ -180,7 +180,7 @@ fit_resamples.sim_spec <- function(object, resamples = NULL, ..., metrics = NULL
   rlang::check_dots_empty()
   if (nrow(tune_args.sim_spec(object))) abort("Fix or finalize the tuned arguments first (see finalize_sim()).")
   study <- prepare_study(object, resamples, metrics, NULL)
-  configs <- tibble::tibble(.config = "Config1")
+  configs <- tibble::tibble(.config = "Config001")
   runner <- new_runner(object, study$metrics, control)
   rows <- run_designs(runner, configs, scenario_list(study$resamples), study$resamples)
   new_sim_results(object, study, configs, rows, runner, "resamples")

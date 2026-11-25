@@ -101,3 +101,9 @@ test_that("designs share founders and QTL position on a seed", {
   b <- simulate_mapping_replicate(resolve_args(small_mapping(type = "NAM", families = 3)), 7)
   expect_equal(c(a$qtl_chr, a$qtl_pos), c(b$qtl_chr, b$qtl_pos))
 })
+
+test_that("permutation thresholds hold the false-positive rate near alpha", {
+  spec <- small_mapping(type = "RIL", lines = 150, n_background = 0, qtl_pve = 0.01, n_perm = 50)
+  res <- fit_resamples(spec, sim_replicates(60), metrics = sim_metric_set(other_peaks))
+  expect_lt(collect_metrics(res)$mean, 0.15)
+})
