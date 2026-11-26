@@ -38,9 +38,16 @@
     <li><a class="dropdown-item" href="../articles/why-simulate.html">Why simulate a breeding program?</a></li>
     <li><a class="dropdown-item" href="../articles/replicates.html">How many replicates do I need?</a></li>
     <li><a class="dropdown-item" href="../articles/choosing-designs.html">Choosing a design</a></li>
+    <li><a class="dropdown-item" href="../articles/glossary.html">Glossary</a></li>
+    <li><a class="dropdown-item" href="../articles/cheatsheet.html">Cheat sheet</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Breeding problems</h6></li>
     <li><a class="dropdown-item" href="../articles/yield-trials.html">Allocating yield trial plots</a></li>
+    <li><a class="dropdown-item" href="../articles/intensity-diversity.html">Selection intensity versus diversity</a></li>
+    <li><a class="dropdown-item" href="../articles/winter-nursery.html">Is a winter nursery worth it?</a></li>
+    <li><a class="dropdown-item" href="../articles/technology-break-even.html">When does a new phenotyping tool pay off?</a></li>
+    <li><a class="dropdown-item" href="../articles/genomic-selection.html">Genomic or phenotypic selection?</a></li>
+    <li><a class="dropdown-item" href="../articles/backcrossing.html">Planning a marker-assisted backcross</a></li>
     <li><a class="dropdown-item" href="../articles/gene-pyramiding.html">Pyramiding resistance genes with markers</a></li>
     <li><a class="dropdown-item" href="../articles/mapping-design.html">Designing a QTL mapping population</a></li>
   </ul>
@@ -249,9 +256,11 @@ linkage:</p>
 <code>marker_cM</code>, or run several as scenarios.</li>
 <li>Add genes. Extend the position lists and the F1 haplotypes, and the
 rest of the code follows.</li>
-<li>Add a backcross generation, or change how many F2 plants advance in
-the two-step strategy, then make that a <code><a href="https://hardhat.tidymodels.org/reference/tune.html" class="external-link">tune()</a></code> argument
-too.</li>
+<li>Change how many F2 plants advance in the two-step strategy, then
+make that a <code><a href="https://hardhat.tidymodels.org/reference/tune.html" class="external-link">tune()</a></code> argument too.</li>
+<li>To pyramid genes into an elite variety by backcrossing, with
+background selection and linkage drag, use
+<code><a href="../reference/backcross_program.html">backcross_program()</a></code>. The <a href="backcrossing.html">backcrossing article</a> shows how.</li>
 <li>For pyramiding inside a whole breeding program, with selection on
 yield as well, use <code><a href="../reference/alphasim_program.html">alphasim_program()</a></code>. AlphaSimR’s
 <code>SP$addSnpChip()</code> and <code><a href="https://gaynorr.github.io/AlphaSimR/reference/pullSnpGeno.html" class="external-link">pullSnpGeno()</a></code> give you

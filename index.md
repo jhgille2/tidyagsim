@@ -83,6 +83,11 @@ tune_bayes(recurrent, sim_replicates(10), constraints = list(genetic_variance = 
   lines, BC*s*F*t*, nested association mapping, advanced-backcross NAM
   and 4- or 8-way MAGIC), with genome scans, permutation thresholds,
   costs and time to results.
+- **[`backcross_program()`](https://jhgille2.github.io/tidyagsim/reference/backcross_program.md)**:
+  marker-assisted backcrossing of one or more target genes, with
+  foreground, flanking-marker and background selection, simultaneous or
+  parallel (pyramiding) strategies, and recurrent parent recovery,
+  linkage drag, time and genotyping cost as metrics.
 - **[`sim_function()`](https://jhgille2.github.io/tidyagsim/reference/sim_function.md)**:
   any R function of its arguments and a seed.
 - **[`breeding_program()`](https://jhgille2.github.io/tidyagsim/reference/breeding_program.md)**:

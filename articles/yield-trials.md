@@ -58,6 +58,9 @@ pipeline
 #>   cross_cost = 25
 #>   ssd_cost = 2
 #>   plot_cost = 15
+#>   pyt_plot_cost = NA
+#>   pyt_error = 1
+#>   offseason_cost = 0
 #>   max_plots = Inf
 #>   max_cost = Inf
 ```

@@ -70,7 +70,7 @@ control_sim(verbose = TRUE, cache = tempfile("study-cache"))
 #> [1] FALSE
 #> 
 #> $cache
-#> [1] "/tmp/RtmpSuHJhq/study-cache18d03d8fdf1d"
+#> [1] "/tmp/RtmpyrKUy3/study-cache183459e50bdd"
 #> 
 #> $stop_on_error
 #> [1] FALSE

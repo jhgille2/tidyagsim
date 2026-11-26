@@ -2,14 +2,21 @@ pandoc: 3.8.3
 pkgdown: 2.2.1
 pkgdown_sha: ~
 articles:
+  articles/backcrossing: backcrossing.html
+  articles/cheatsheet: cheatsheet.html
   articles/choosing-designs: choosing-designs.html
   articles/gene-pyramiding: gene-pyramiding.html
+  articles/genomic-selection: genomic-selection.html
+  articles/glossary: glossary.html
+  articles/intensity-diversity: intensity-diversity.html
   mapping-design: mapping-design.html
   articles/replicates: replicates.html
+  articles/technology-break-even: technology-break-even.html
   tidyagsim: tidyagsim.html
   articles/why-simulate: why-simulate.html
+  articles/winter-nursery: winter-nursery.html
   articles/yield-trials: yield-trials.html
-last_built: 2026-11-26T00:36Z
+last_built: 2026-11-26T01:13Z
 urls:
   reference: https://jhgille2.github.io/tidyagsim/reference
   article: https://jhgille2.github.io/tidyagsim/articles

@@ -24,7 +24,8 @@ line_pipeline(..., founders = asr_founders())
   `progeny_per_cross`, `line_generation`, `generations_per_year`,
   `pyt_locations`, `pyt_reps`, `n_ayt`, `ayt_locations`, `ayt_reps`,
   `n_release`, `cycles`, `gxe_var`, `cross_cost`, `ssd_cost`,
-  `plot_cost`, `max_plots`, `max_cost`, and any
+  `plot_cost`, `pyt_plot_cost`, `pyt_error`, `offseason_cost`,
+  `max_plots`, `max_cost`, and any
   [`asr_founders()`](https://jhgille2.github.io/tidyagsim/reference/asr_founders.md)
   field such as `plot_h2`.
 
@@ -66,9 +67,21 @@ A cycle takes `line_generation / generations_per_year` years in the
 nursery (crossing and selfing) plus one year for each trial. Cycles do
 not overlap, which keeps the model simple but understates the gain per
 year of programs that start new crosses every year. Cost adds crosses
-(`cross_cost`), single-seed-descent plants per generation (`ssd_cost`)
-and trial plots (`plot_cost`). Designs whose plots or cost per cycle
-exceed `max_plots` or `max_cost` are skipped as infeasible.
+(`cross_cost`), single-seed-descent plants per generation (`ssd_cost`),
+trial plots (`plot_cost`, or `pyt_plot_cost` for the PYT when it is
+phenotyped differently) and, for nursery generations grown outside the
+main season
+(`line_generation - ceiling(line_generation / generations_per_year)` of
+them), `offseason_cost` per line per generation. Designs whose plots or
+cost per cycle exceed `max_plots` or `max_cost` are skipped as
+infeasible.
+
+## A different PYT phenotype
+
+`pyt_error` multiplies the PYT error variance and `pyt_plot_cost` sets
+its cost per plot, so a cheaper but noisier screen, such as drone
+imagery or a visual score, can be compared with conventional yield
+plots.
 
 ## Outcomes
 
@@ -106,6 +119,9 @@ line_pipeline(n_ayt = tune(), ayt_locations = tune())
 #>   cross_cost = 25
 #>   ssd_cost = 2
 #>   plot_cost = 15
+#>   pyt_plot_cost = NA
+#>   pyt_error = 1
+#>   offseason_cost = 0
 #>   max_plots = Inf
 #>   max_cost = Inf
 if (FALSE) { # \dontrun{

@@ -12,6 +12,9 @@ New to breeding simulation? Read these in order.
   need?](https://jhgille2.github.io/tidyagsim/articles/replicates.md):
 - [Choosing a
   design](https://jhgille2.github.io/tidyagsim/articles/choosing-designs.md):
+- [Glossary](https://jhgille2.github.io/tidyagsim/articles/glossary.md):
+- [Cheat
+  sheet](https://jhgille2.github.io/tidyagsim/articles/cheatsheet.md):
 
 ### Breeding problems
 
@@ -20,6 +23,16 @@ study.
 
 - [Allocating yield trial
   plots](https://jhgille2.github.io/tidyagsim/articles/yield-trials.md):
+- [Selection intensity versus
+  diversity](https://jhgille2.github.io/tidyagsim/articles/intensity-diversity.md):
+- [Is a winter nursery worth
+  it?](https://jhgille2.github.io/tidyagsim/articles/winter-nursery.md):
+- [When does a new phenotyping tool pay
+  off?](https://jhgille2.github.io/tidyagsim/articles/technology-break-even.md):
+- [Genomic or phenotypic
+  selection?](https://jhgille2.github.io/tidyagsim/articles/genomic-selection.md):
+- [Planning a marker-assisted
+  backcross](https://jhgille2.github.io/tidyagsim/articles/backcrossing.md):
 - [Pyramiding resistance genes with
   markers](https://jhgille2.github.io/tidyagsim/articles/gene-pyramiding.md):
 - [Designing a QTL mapping

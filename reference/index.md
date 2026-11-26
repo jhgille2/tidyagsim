@@ -125,6 +125,16 @@ dials parameter objects and ranges.
 - [`extract_sim_result()`](https://jhgille2.github.io/tidyagsim/reference/extract_sim_result.md)
   : Pull one spec's results out of a set
 
+## Backcrossing and pyramiding
+
+Marker-assisted backcrossing, single and multiple introgressions.
+
+- [`backcross_program()`](https://jhgille2.github.io/tidyagsim/reference/backcross_program.md)
+  : Marker-assisted backcrossing and gene pyramiding
+- [`bc_expected_recovery()`](https://jhgille2.github.io/tidyagsim/reference/bc_expected_recovery.md)
+  [`min_population_size()`](https://jhgille2.github.io/tidyagsim/reference/bc_expected_recovery.md)
+  : Backcrossing by the numbers
+
 ## Mapping population engine
 
 - [`sim_genetic_map()`](https://jhgille2.github.io/tidyagsim/reference/sim_genetic_map.md)

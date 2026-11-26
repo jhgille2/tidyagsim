@@ -32,5 +32,18 @@
   is a ready-made inbred line pipeline with G×E, costs and time.
 - A data-frame `grid` now supplies ranges for tuned arguments that have
   no default range.
+- [`line_pipeline()`](https://jhgille2.github.io/tidyagsim/reference/line_pipeline.md)
+  gains `pyt_plot_cost`, `pyt_error` (a cheaper or noisier PYT screen)
+  and `offseason_cost` (winter nursery and greenhouse generations).
+- [`backcross_program()`](https://jhgille2.github.io/tidyagsim/reference/backcross_program.md):
+  marker-assisted backcrossing and gene pyramiding (single or multiple
+  targets, simultaneous or parallel streams), with
+  [`bc_expected_recovery()`](https://jhgille2.github.io/tidyagsim/reference/bc_expected_recovery.md)
+  and
+  [`min_population_size()`](https://jhgille2.github.io/tidyagsim/reference/bc_expected_recovery.md)
+  from backcross theory, and an article on planning a backcross.
+- More articles: glossary, cheat sheet, selection intensity versus
+  diversity, winter nursery, phenotyping technology break-even, genomic
+  versus phenotypic selection.
 - Beginner articles (why simulate, how many replicates, choosing a
   design) and case studies (yield trial allocation, gene pyramiding).

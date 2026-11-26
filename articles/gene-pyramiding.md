@@ -194,10 +194,15 @@ show_best(res, metric = "cost", constraints = list(success = 0.9), scenario = "l
   several as scenarios.
 - Add genes. Extend the position lists and the F1 haplotypes, and the
   rest of the code follows.
-- Add a backcross generation, or change how many F2 plants advance in
-  the two-step strategy, then make that a
-  [`tune()`](https://hardhat.tidymodels.org/reference/tune.html)
+- Change how many F2 plants advance in the two-step strategy, then make
+  that a [`tune()`](https://hardhat.tidymodels.org/reference/tune.html)
   argument too.
+- To pyramid genes into an elite variety by backcrossing, with
+  background selection and linkage drag, use
+  [`backcross_program()`](https://jhgille2.github.io/tidyagsim/reference/backcross_program.md).
+  The [backcrossing
+  article](https://jhgille2.github.io/tidyagsim/articles/backcrossing.md)
+  shows how.
 - For pyramiding inside a whole breeding program, with selection on
   yield as well, use
   [`alphasim_program()`](https://jhgille2.github.io/tidyagsim/reference/alphasim_program.md).

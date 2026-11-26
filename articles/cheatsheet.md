@@ -1,0 +1,125 @@
+# Cheat sheet
+
+Everything on one page. Each block is a step of a simulation study, in
+the order you write them.
+
+## 1. Describe what to simulate
+
+``` r
+
+library(tidyagsim)
+library(AlphaSimR)
+
+# A ready-made line pipeline
+spec <- line_pipeline(n_ayt = tune(), ayt_locations = tune(), cycles = 4)
+
+# Your own AlphaSimR scheme: one replicate as a function
+spec <- alphasim_program(
+  function(founders, SP, n_select, cycles) {
+    tracker <- asr_tracker(founders)
+    pop <- founders
+    for (cycle in seq_len(cycles)) {
+      pop <- randCross(selectInd(setPheno(pop), n_select), nCrosses = 200)
+      tracker$record(pop, year = cycle, cost = 3000)
+    }
+    asr_summary(tracker)                       # gain, variance, cost, ...
+  },
+  n_select = tune(), cycles = 10,
+  founders = asr_founders(n_founders = 100, n_chr = 20, plot_h2 = 0.3),
+  params = list(n_select = sim_param(c(5, 50)))
+)
+
+# Any R function that takes its settings and a seed
+spec <- sim_function(function(x, seed) list(y = rnorm(1, x)), x = tune(),
+                     params = list(x = sim_param(c(0, 1))))
+
+# Mapping populations
+spec <- mapping_population(type = "RIL", lines = tune(), locations = tune())
+```
+
+## 2. Choose ranges (optional)
+
+``` r
+
+params <- extract_parameter_set_dials(spec)
+params <- update(params, n_ayt = sim_param(c(40, 200)))
+# ...or skip this and give a data frame of designs as `grid`.
+```
+
+## 3. Replicates and scenarios
+
+``` r
+
+reps <- sim_replicates(20)                                  # 20 paired seeds
+reps <- sim_replicates(20, scenarios = sim_scenarios(plot_h2 = c(0.1, 0.3), gxe_var = c(0.2, 1)))
+```
+
+## 4. Metrics
+
+``` r
+
+metrics <- sim_metric_set(release_gain, gain_per_year, cost)          # built-ins
+metrics <- sim_metric_set(release_gain, sim_metric("ayt_accuracy", "maximize"))
+```
+
+Built-in breeding metrics: `release_gain`, `gain_per_year`,
+`gain_per_cost`, `genetic_variance`, `expected_heterozygosity`,
+`accuracy`, `lines`, `plots`, `cost`, `years`. Mapping: `power`,
+`other_peaks`, `location_error`, `support_interval`.
+
+## 5. Run
+
+``` r
+
+res <- fit_resamples(spec, reps)                            # one fixed design
+res <- tune_grid(spec, reps, grid = 20, metrics = metrics)  # 20 space-filling designs
+res <- tune_grid(spec, reps, grid = expand.grid(n_ayt = c(60, 120), ayt_locations = 1:4))
+res <- tune_race(spec, reps, grid = 30, burn_in = 4)        # drop losers early
+res <- tune_bayes(spec, reps, initial = 6, iter = 15,       # model-guided search
+                  constraints = list(cost = 50000))
+```
+
+## 6. Look and choose
+
+``` r
+
+collect_metrics(res)                      # means and Monte Carlo SEs
+collect_metrics(res, type = "wide")       # one row per design
+collect_metrics(res, summarize = FALSE)   # every replicate
+collect_trajectories(res)                 # yearly records (needs save_outcomes)
+
+show_best(res, metric = "release_gain", n = 5)
+show_best(res, metric = "release_gain", constraints = list(cost = 50000))
+select_best(res, metric = "release_gain")
+select_by_one_std_err(res, cost, metric = "release_gain")    # cheapest near the best
+select_by_pct_loss(res, cost, metric = "release_gain", limit = 2)
+pareto_front(res, metrics = c("release_gain", "genetic_variance"))
+compare_designs(res, "Config001", "Config002")              # paired difference
+
+autoplot(res)                                 # metric against each tuned setting
+autoplot(res, type = "pareto", metric = c("release_gain", "genetic_variance"))
+autoplot(res, type = "race")
+```
+
+## 7. Compare different kinds of designs
+
+``` r
+
+set <- sim_set(ril = mapping_population(type = "RIL", lines = tune()),
+               nam = mapping_population(type = "NAM", lines = tune(), families = tune()))
+set <- sim_map(set, "tune_grid", resamples = reps, grid = 10)
+rank_results(set, rank_metric = "power")
+```
+
+## 8. Big studies
+
+``` r
+
+future::plan(future::multisession, workers = 4)
+ctrl <- control_sim(parallel = TRUE,          # designs in parallel (works on Windows)
+                    cache = "study-cache",    # resume after an interruption
+                    save_outcomes = TRUE)     # keep trajectories and raw outcomes
+res <- tune_grid(spec, reps, grid = 50, control = ctrl)
+
+write_slurm_array("study.R", dir = "slurm", tasks = 20, cluster = "ceres")   # a Slurm job array
+```

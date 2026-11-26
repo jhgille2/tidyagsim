@@ -83,6 +83,11 @@ tune_bayes(recurrent, sim_replicates(10), constraints = list(genetic_variance = 
   lines, BC*s*F*t*, nested association mapping, advanced-backcross NAM
   and 4- or 8-way MAGIC), with genome scans, permutation thresholds,
   costs and time to results.
+- **[`backcross_program()`](https://jhgille2.github.io/tidyagsim/reference/backcross_program.md)**:
+  marker-assisted backcrossing of one or more target genes, with
+  foreground, flanking-marker and background selection, simultaneous or
+  parallel (pyramiding) strategies, and recurrent parent recovery,
+  linkage drag, time and genotyping cost as metrics.
 - **[`sim_function()`](https://jhgille2.github.io/tidyagsim/reference/sim_function.md)**:
   any R function of its arguments and a seed.
 - **[`breeding_program()`](https://jhgille2.github.io/tidyagsim/reference/breeding_program.md)**:
@@ -273,6 +278,16 @@ dials parameter objects and ranges.
 - [`extract_sim_result()`](https://jhgille2.github.io/tidyagsim/reference/extract_sim_result.md)
   : Pull one spec's results out of a set
 
+## Backcrossing and pyramiding
+
+Marker-assisted backcrossing, single and multiple introgressions.
+
+- [`backcross_program()`](https://jhgille2.github.io/tidyagsim/reference/backcross_program.md)
+  : Marker-assisted backcrossing and gene pyramiding
+- [`bc_expected_recovery()`](https://jhgille2.github.io/tidyagsim/reference/bc_expected_recovery.md)
+  [`min_population_size()`](https://jhgille2.github.io/tidyagsim/reference/bc_expected_recovery.md)
+  : Backcrossing by the numbers
+
 ## Mapping population engine
 
 - [`sim_genetic_map()`](https://jhgille2.github.io/tidyagsim/reference/sim_genetic_map.md)
@@ -331,6 +346,9 @@ New to breeding simulation? Read these in order.
   need?](https://jhgille2.github.io/tidyagsim/articles/replicates.md):
 - [Choosing a
   design](https://jhgille2.github.io/tidyagsim/articles/choosing-designs.md):
+- [Glossary](https://jhgille2.github.io/tidyagsim/articles/glossary.md):
+- [Cheat
+  sheet](https://jhgille2.github.io/tidyagsim/articles/cheatsheet.md):
 
 ### Breeding problems
 
@@ -339,6 +357,16 @@ study.
 
 - [Allocating yield trial
   plots](https://jhgille2.github.io/tidyagsim/articles/yield-trials.md):
+- [Selection intensity versus
+  diversity](https://jhgille2.github.io/tidyagsim/articles/intensity-diversity.md):
+- [Is a winter nursery worth
+  it?](https://jhgille2.github.io/tidyagsim/articles/winter-nursery.md):
+- [When does a new phenotyping tool pay
+  off?](https://jhgille2.github.io/tidyagsim/articles/technology-break-even.md):
+- [Genomic or phenotypic
+  selection?](https://jhgille2.github.io/tidyagsim/articles/genomic-selection.md):
+- [Planning a marker-assisted
+  backcross](https://jhgille2.github.io/tidyagsim/articles/backcrossing.md):
 - [Pyramiding resistance genes with
   markers](https://jhgille2.github.io/tidyagsim/articles/gene-pyramiding.md):
 - [Designing a QTL mapping
