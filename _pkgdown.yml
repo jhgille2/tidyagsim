@@ -17,11 +17,17 @@ articles:
   - articles/why-simulate
   - articles/replicates
   - articles/choosing-designs
+  - articles/glossary
+  - articles/cheatsheet
 - title: Breeding problems
   navbar: Breeding problems
   desc: Common plant breeding questions, each answered with one simulation study.
   contents:
   - articles/yield-trials
+  - articles/intensity-diversity
+  - articles/winter-nursery
+  - articles/technology-break-even
+  - articles/genomic-selection
   - articles/gene-pyramiding
   - mapping-design
 

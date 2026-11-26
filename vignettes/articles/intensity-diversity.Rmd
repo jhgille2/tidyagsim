@@ -1,0 +1,110 @@
+---
+title: "Selection intensity versus diversity"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 7, fig.height = 4, dpi = 110)
+```
+
+Every cycle, a breeder decides how many lines to recycle as parents. Using
+only the very best lines gives the most gain next cycle. It also narrows the
+genetic base, and a narrow base has less variance to select on in the
+cycles after that. This trade-off between short-term gain and long-term
+potential has no single right answer. The best choice depends on your
+horizon, and on how much diversity you are willing to spend.
+
+This article measures the trade-off for a line pipeline and shows how a
+Pareto front turns it into a menu of good options.
+
+```{r setup, message = FALSE}
+library(tidyagsim)
+library(ggplot2)
+theme_set(theme_minimal(base_size = 12))
+```
+
+## The study
+
+We use `line_pipeline()`, run for six cycles, and vary the number of parents
+recycled from the advanced yield trial:
+
+```{r}
+pipeline <- line_pipeline(
+  n_parents = tune(),
+  n_crosses = 30, progeny_per_cross = 15, n_ayt = 80, cycles = 6,
+  founders = asr_founders(n_chr = 10, seg_sites = 100)
+)
+
+metrics <- sim_metric_set(release_gain, genetic_variance, expected_heterozygosity, gain_per_year)
+
+res <- tune_grid(
+  pipeline,
+  resamples = sim_replicates(15, seed = 1),
+  grid = data.frame(n_parents = c(4, 8, 16, 32, 64)),
+  metrics = metrics,
+  control = control_sim(save_outcomes = TRUE)
+)
+```
+
+## Gain over time
+
+```{r, fig.alt = "Mean genetic value of the parents over six cycles for five numbers of parents. Few parents lead early; more parents catch up by the last cycles."}
+traj <- collect_trajectories(res)
+avg <- aggregate(cbind(mean, heterozygosity) ~ n_parents + year, data = traj, FUN = mean)
+
+ggplot(avg, aes(year, mean, colour = factor(n_parents))) +
+  geom_line(linewidth = 1) + geom_point() +
+  scale_colour_viridis_d(end = 0.9) +
+  labs(x = "Year", y = "Mean genetic value of parents (founder SDs)", colour = "Parents",
+       title = "Gain over six breeding cycles")
+```
+
+```{r, fig.alt = "Expected heterozygosity of the parents over six cycles, falling fastest with few parents."}
+ggplot(avg, aes(year, heterozygosity, colour = factor(n_parents))) +
+  geom_line(linewidth = 1) + geom_point() +
+  scale_colour_viridis_d(end = 0.9) +
+  labs(x = "Year", y = "Heterozygosity (fraction of founders')", colour = "Parents",
+       title = "Diversity left in the parents")
+```
+
+Few parents spend diversity fast. Expected heterozygosity is the chance two
+alleles drawn at random from the parents differ, and it falls each cycle in
+proportion to how few parents there are. Within six cycles this already costs
+gain. Four parents lead for the first three cycles, then 8 and 16 parents pass
+them, and 16 finish highest. Sixty-four parents keep the most diversity but
+select too weakly to keep up.
+
+## The menu: a Pareto front
+
+```{r}
+collect_metrics(res, type = "wide")[, c("n_parents", "release_gain", "release_gain_se",
+                                        "expected_heterozygosity", "genetic_variance")]
+pareto_front(res, metrics = c("release_gain", "expected_heterozygosity"))
+```
+
+```{r, fig.alt = "Gain of released lines against remaining heterozygosity for each number of parents, with the Pareto front highlighted."}
+autoplot(res, type = "pareto", metric = c("release_gain", "expected_heterozygosity"))
+```
+
+Every design on the front is a defensible choice. Moving along it trades gain
+now for diversity later, at the exchange rate the plot shows. Designs off the
+front can be dropped: some other design does at least as well on both goals.
+
+## Choose with a diversity floor
+
+If your program has a rule such as "keep at least 60% of the founders'
+heterozygosity after six cycles", make it a constraint and let the helpers
+pick the highest gain that respects it:
+
+```{r}
+show_best(res, metric = "release_gain", constraints = list(expected_heterozygosity = 0.6))
+```
+
+## Going further
+
+* Run longer horizons (`cycles = 15`) to see the few-parent designs fall
+  behind, as in [Why simulate?](why-simulate.html).
+* Tune `n_parents` and `n_crosses` together with `tune_bayes()`, under a
+  heterozygosity constraint.
+* Replace truncation selection with optimal contribution selection inside an
+  `alphasim_program()` of your own (for example with the optiSel package), and
+  compare it with this pipeline in a `sim_set()`.

@@ -86,3 +86,18 @@ test_that("supplied haplotypes are sampled", {
   expect_equal(b$pop@nInd, 15)
   expect_error(asr_build(asr_founders(n_founders = 50, haplotypes = hap), 1L), "more than")
 })
+
+test_that("PYT screen and off-season costs are accounted", {
+  a <- small_line()$args
+  base <- line_resources(a)
+  expect_equal(offseason_generations(5, 2), 2)
+  expect_equal(offseason_generations(5, 1), 0)
+  expect_equal(offseason_generations(6, 3), 4)
+  more <- line_resources(modifyList(a, list(offseason_cost = 3)))
+  expect_equal(more$cost - base$cost, 2 * 50 * 3)
+  cheap <- line_resources(modifyList(a, list(pyt_plot_cost = 5)))
+  expect_equal(base$cost - cheap$cost, 50 * (15 - 5))
+  noisy <- sim_simulate(small_line(pyt_error = 20), small_line(pyt_error = 20)$args, 1:3)
+  clean <- sim_simulate(small_line(), small_line()$args, 1:3)
+  expect_lt(mean(vapply(noisy, `[[`, 0, "accuracy")), mean(vapply(clean, `[[`, 0, "accuracy")))
+})
