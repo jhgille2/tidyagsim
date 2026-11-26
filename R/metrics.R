@@ -15,7 +15,8 @@ builtin_metrics <- function() {
     c("gain_per_year", "maximize", "Genetic gain per year", "trait units per year"),
     c("gain_per_cost", "maximize", "Genetic gain per unit cost", "trait units per currency unit"),
     c("expected_heterozygosity", "maximize", "Parent-pool expected heterozygosity", "proportion"),
-    c("genetic_variance", "maximize", "Additive genetic variance", "trait units squared"),
+    c("genetic_variance", "maximize", "Genetic variance relative to the founders", "proportion"),
+    c("accuracy", "maximize", "Correlation of selection criterion with genetic value", "correlation"),
     # Resources
     c("lines", "minimize", "Lines", "lines"),
     c("plots", "minimize", "Field plots", "plots"),
@@ -63,7 +64,7 @@ sim_metric <- function(name, direction = "maximize", fn = NULL, label = name, un
 #' Built-in metrics: `power`, `other_peaks`, `location_error`,
 #' `support_interval`, `peak_lod`, `realized_pve`, `threshold` (mapping);
 #' `release_gain`, `gain_per_year`, `gain_per_cost`, `expected_heterozygosity`,
-#' `genetic_variance` (breeding programs); `lines`, `plots`, `genotyped`,
+#' `genetic_variance`, `accuracy` (breeding programs); `lines`, `plots`, `genotyped`,
 #' `crosses`, `cost`, `years`, `generations` (resources).
 #'
 #' @param ... Metric names (bare or quoted) or `sim_metric` objects.

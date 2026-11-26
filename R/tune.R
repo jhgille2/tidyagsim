@@ -75,11 +75,11 @@ sim_grid <- function(params, grid = NULL, seed = 1) {
 
 `%|e|%` <- function(a, b) if (!length(a) || identical(a, "")) b else a
 
-prepare_study <- function(object, resamples, metrics, param_info) {
+prepare_study <- function(object, resamples, metrics, param_info, grid = NULL) {
   if (!inherits(object, "sim_spec")) abort("`object` must be a simulation spec.")
   resamples <- as_rset(resamples)
   metrics <- as_metric_set(metrics, object)
-  params <- param_info %||% extract_parameter_set_dials.sim_spec(object)
+  params <- param_info %||% extract_parameter_set_dials.sim_spec(object, grid = grid)
   marked <- tune_args.sim_spec(object)
   if (!setequal(params$id, unique(marked$id))) {
     abort(sprintf("`param_info` ids (%s) must match the tuned parameters (%s).",
@@ -151,7 +151,7 @@ tune_grid.default <- function(object, ...) forward("tune", "tune_grid", object, 
 tune_grid.sim_spec <- function(object, resamples = NULL, ..., grid = NULL, metrics = NULL, param_info = NULL,
                                control = control_sim(), seed = 1) {
   rlang::check_dots_empty()
-  study <- prepare_study(object, resamples, metrics, param_info)
+  study <- prepare_study(object, resamples, metrics, param_info, grid)
   if (!nrow(study$params)) abort("Mark at least one argument with tune(), or use fit_resamples().")
   configs <- sim_grid(study$params, grid, seed)
   runner <- new_runner(object, study$metrics, control)
@@ -227,7 +227,7 @@ tune_race <- function(object, resamples = NULL, ..., grid = NULL, metrics = NULL
                       control = control_sim(), burn_in = 3, alpha = 0.05, metric = NULL, constraints = NULL,
                       seed = 1) {
   rlang::check_dots_empty()
-  study <- prepare_study(object, resamples, metrics, param_info)
+  study <- prepare_study(object, resamples, metrics, param_info, grid)
   reps <- study$resamples
   if (burn_in < 2 || burn_in > nrow(reps)) abort("`burn_in` must be between 2 and the number of replicates.")
   m <- if (is.null(metric)) study$metrics[[1]] else study$metrics[[metric]]

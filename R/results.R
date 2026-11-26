@@ -100,6 +100,7 @@ collect_metrics.sim_results <- function(x, ..., summarize = TRUE, by_scenario = 
   if (!summarize) {
     return(x$raw[, setdiff(names(x$raw), ".outcome"), drop = FALSE])
   }
+  if (!nrow(x$raw)) abort("No simulation finished; see collect_notes(x).")
   by_scenario <- by_scenario %||% (nrow(attr(x$resamples, "scenarios")) > 1)
   summ <- summarize_raw(x$raw, x$metrics, by_scenario)
   values <- x$configs[match(summ$.config, x$configs$.config), ids, drop = FALSE]

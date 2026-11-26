@@ -11,13 +11,14 @@ vignette: >
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 7, fig.height = 4.5)
 ```
 
-tidyagsim brings the grammar of [tidymodels](https://www.tidymodels.org/) to
-stochastic simulation studies. If you have tuned a model with `tune_grid()`,
-you already know how to run a simulation experiment with it:
+tidyagsim extends [AlphaSimR](https://cran.r-project.org/package=AlphaSimR),
+and any other simulator you can call from R, with the grammar of
+[tidymodels](https://www.tidymodels.org/). If you have tuned a model with
+`tune_grid()`, you already know how to run a simulation experiment with it:
 
 | tidymodels | tidyagsim | What it holds |
 |---|---|---|
-| parsnip model spec | simulation spec: `mapping_population()`, `breeding_program()`, `sim_function()` | the simulator and its arguments |
+| parsnip model spec | simulation spec: `alphasim_program()`, `line_pipeline()`, `mapping_population()`, `sim_function()` | the simulator and its arguments |
 | `tune()` | `tune()` | "let the tuner choose this argument" |
 | dials parameters | `extract_parameter_set_dials()`, `n_lines()`, `filial_generation()`, ... | ranges of tuned arguments |
 | rsample resamples | `sim_replicates()`, `sim_scenarios()` | paired random seeds and assumption scenarios |
@@ -125,11 +126,18 @@ select_best(bo, metric = "cost", constraints = list(yield = 9))
 
 ## Real simulators
 
+The toy trial above shows the grammar. The same verbs run real breeding
+simulations:
+
+* `alphasim_program()` turns your own AlphaSimR script into a spec: write one
+  replicate as a function of the founders, `SP` and your design arguments.
+  `line_pipeline()` is a ready-made soybean-style line pipeline built on it.
+  Start with the [Why simulate?](https://jhgille2.github.io/tidyagsim/articles/why-simulate.html)
+  article.
 * `mapping_population()` simulates QTL mapping populations (F2, RIL, BC*s*F*t*,
-  NAM, advanced-backcross NAM and MAGIC). See
-  `vignette("mapping-design")` for a full study.
-* `breeding_program()` runs a breedsim flowchart program with the AlphaSimR
-  engine; its fields are tuned by `"stage.field"` path.
+  NAM, advanced-backcross NAM and MAGIC). See `vignette("mapping-design")`.
+* `breeding_program()` runs a breedsim flowchart program from the desktop
+  app; its fields are tuned by `"stage.field"` path.
 
 ## Running big studies
 

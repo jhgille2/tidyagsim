@@ -102,6 +102,8 @@ tunable.sim_spec <- function(x, ...) {
 #'
 #' @param x A simulation spec.
 #' @param ... Not used.
+#' @param grid Optional data frame of designs; tuned arguments without a
+#'   default range take theirs from its values.
 #' @return A dials `parameters` object.
 #' @examples
 #' spec <- mapping_population(type = "RIL", lines = tune(), generation = tune())
@@ -109,7 +111,7 @@ tunable.sim_spec <- function(x, ...) {
 #' params
 #' update(params, lines = n_lines(c(100, 400)))
 #' @exportS3Method hardhat::extract_parameter_set_dials
-extract_parameter_set_dials.sim_spec <- function(x, ...) {
+extract_parameter_set_dials.sim_spec <- function(x, ..., grid = NULL) {
   marked <- tune_args.sim_spec(x)
   marked <- marked[!duplicated(marked$id), , drop = FALSE]
   if (!nrow(marked)) {
@@ -119,9 +121,12 @@ extract_parameter_set_dials.sim_spec <- function(x, ...) {
   objects <- lapply(seq_len(nrow(marked)), function(i) {
     name <- marked$name[i]
     obj <- defaults[[name]]
+    if (is.null(obj) && is.data.frame(grid) && marked$id[i] %in% names(grid)) {
+      obj <- param_from_values(grid[[marked$id[i]]], name)
+    }
     if (is.null(obj)) {
       abort(c(sprintf("No default range for `%s`.", name),
-              i = "Supply one with `update(extract_parameter_set_dials(spec), ...)` and pass it as `param_info`."))
+              i = "Give its range in the spec's `params`, pass a data frame as `grid`, or supply `param_info`."))
     }
     obj
   })
@@ -130,6 +135,12 @@ extract_parameter_set_dials.sim_spec <- function(x, ...) {
     component = marked$component, component_id = marked$component_id,
     object = objects
   )
+}
+
+# A parameter whose range is the values a user listed in a grid.
+param_from_values <- function(v, name) {
+  if (is.factor(v)) v <- as.character(v)
+  if (is.numeric(v)) sim_param(range(v), label = name) else sim_param_values(unique(v), label = name)
 }
 
 #' Change the arguments of a spec

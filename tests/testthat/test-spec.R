@@ -36,3 +36,12 @@ test_that("sim_function needs ranges for arguments without defaults", {
 test_that("printing works", {
   expect_output(print(mapping_population(lines = tune())), "Tuned arguments")
 })
+
+test_that("a data-frame grid supplies ranges the spec does not know", {
+  f <- sim_function(function(a, b, seed) list(y = a + nchar(b)), a = tune(), b = tune())
+  expect_error(extract_parameter_set_dials(f), "No default range")
+  res <- tune_grid(f, sim_replicates(2), grid = data.frame(a = c(1, 5), b = c("x", "yy")),
+                   metrics = sim_metric_set(sim_metric("y")))
+  m <- collect_metrics(res)
+  expect_equal(sort(m$mean), c(2, 7))
+})

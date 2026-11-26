@@ -81,9 +81,13 @@ plot_pareto <- function(object, metric) {
 }
 
 plot_race <- function(object) {
-  if (!nrow(object$trace) || !"kept" %in% names(object$trace)) abort("No racing trace in these results.")
-  ggplot2::ggplot(object$trace, ggplot2::aes(x = .data$replicates, y = .data$kept)) +
-    ggplot2::geom_step() + ggplot2::geom_point() +
+  tr <- object$trace
+  if (!nrow(tr) || !"kept" %in% names(tr)) abort("No racing trace in these results.")
+  # Start from every design at zero replicates, so the first drop is visible.
+  steps <- data.frame(replicates = c(0, tr$replicates), kept = c(tr$designs[1], tr$kept))
+  ggplot2::ggplot(steps, ggplot2::aes(x = .data$replicates, y = .data$kept)) +
+    ggplot2::geom_step(direction = "hv") + ggplot2::geom_point(data = steps[-1, ]) +
+    ggplot2::scale_y_continuous(limits = c(0, NA), breaks = function(l) unique(round(pretty(l)))) +
     ggplot2::labs(x = "Replicates simulated", y = "Designs still in the race") +
     ggplot2::theme_bw()
 }
