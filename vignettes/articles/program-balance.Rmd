@@ -1,0 +1,212 @@
+---
+title: "Balancing an elite program and a pre-breeding program"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 7, fig.height = 4, dpi = 110)
+```
+
+The [introgression article](introgression.html) put exotic germplasm straight
+into the elite crossing block through bridging crosses. Many programs
+instead run a separate **pre-breeding** program. It starts from elite ×
+exotic crosses and improves them by its own cycles of selection, and only its
+best lines are passed to the elite program. A breeder with a fixed budget
+then has to decide how to split it between the two programs.
+
+This article compares the two approaches with a `sim_set()`: two
+`alphasim_program()` specs, run on the same replicates and ranked together.
+It also makes the exotic germplasm more realistic than the introgression
+article did. Here the exotics start well below the elite pool, as wild
+soybean would.
+
+```{r setup, message = FALSE}
+library(tidyagsim)
+library(AlphaSimR)
+library(ggplot2)
+theme_set(theme_minimal(base_size = 12))
+```
+
+## Shared pieces
+
+Both programs start from the same two pools. Half the founders are selected
+*for* yield for eight generations (the elite pool). The other half are
+selected *against* it for four generations, which stands in for wild
+germplasm that is poorly adapted. A few small helpers keep the programs
+short:
+
+```{r}
+make_pools <- function(founders) {
+  elite <- founders[1:30]
+  exotic <- founders[31:60]
+  for (g in 1:8) elite <- self(randCross(selectInd(setPheno(elite), 10), nCrosses = 30, nProgeny = 2))
+  for (g in 1:4) exotic <- self(randCross(selectInd(setPheno(exotic), 10, selectTop = FALSE), nCrosses = 30))
+  list(elite = self(self(elite)), exotic = self(self(exotic)))
+}
+# Three generations of selfing, then a two-rep yield trial.
+advance <- function(pop) setPheno(self(self(pop)), reps = 2)
+# n crosses between random members of a and b.
+cross_to <- function(a, b, n) {
+  hybridCross(a, b, crossPlan = cbind(sample(nInd(a), n, TRUE), sample(nInd(b), n, TRUE)))
+}
+```
+
+Every program grows 400 lines a cycle, in families of 10, and keeps 15
+parents. `share` is the fraction of those 400 lines spent on exotic
+material, and three parent slots are kept for the best exotic-derived lines,
+as in the introgression article. The budget is the same for every design.
+
+## Two ways to use the exotic share
+
+**Bridging** makes new elite × exotic crosses every cycle, backcrosses them
+once to elite, and offers the best to the elite program:
+
+```{r}
+bridging <- function(founders, SP, share, n_lines = 400, per_cross = 10, n_parents = 15,
+                     reserved = 3, cycles = 15) {
+  pools <- make_pools(founders)
+  tracker <- asr_tracker(pools$elite)
+  parents <- selectInd(setPheno(pools$elite, reps = 4), n_parents)
+  for (cycle in seq_len(cycles)) {
+    n_side <- round(share * n_lines / per_cross)
+    lines <- advance(self(randCross(parents, nCrosses = n_lines / per_cross - n_side), nProgeny = per_cross))
+    if (n_side > 0) {
+      bc1 <- cross_to(cross_to(parents, pools$exotic, n_side), parents, n_side)
+      side <- advance(self(bc1, nProgeny = per_cross))
+      parents <- c(selectInd(lines, n_parents - reserved), selectInd(side, reserved))
+    } else {
+      parents <- selectInd(lines, n_parents)
+    }
+    tracker$record(parents, year = cycle * 4, released_lines = selectInd(lines, 3))
+  }
+  asr_summary(tracker)
+}
+```
+
+**Pre-breeding** starts the same way, but then keeps its own population.
+Each cycle it crosses its own best lines, three quarters among themselves and
+one quarter back to elite parents. It offers its best lines to the elite
+program, which by then have had several cycles of improvement:
+
+```{r}
+prebreeding <- function(founders, SP, share, n_lines = 400, per_cross = 10, n_parents = 15,
+                        reserved = 3, cycles = 15) {
+  pools <- make_pools(founders)
+  tracker <- asr_tracker(pools$elite)
+  parents <- selectInd(setPheno(pools$elite, reps = 4), n_parents)
+  pb_parents <- NULL
+  for (cycle in seq_len(cycles)) {
+    n_side <- round(share * n_lines / per_cross)
+    lines <- advance(self(randCross(parents, nCrosses = n_lines / per_cross - n_side), nProgeny = per_cross))
+    if (n_side > 0) {
+      pb <- if (is.null(pb_parents)) {
+        cross_to(cross_to(parents, pools$exotic, n_side), parents, n_side)    # first cycle: elite x exotic, BC1
+      } else {
+        c(randCross(pb_parents, nCrosses = n_side - n_side %/% 4), cross_to(pb_parents, parents, n_side %/% 4))
+      }
+      side <- advance(self(pb, nProgeny = per_cross))
+      pb_parents <- selectInd(side, 10)
+      parents <- c(selectInd(lines, n_parents - reserved), selectInd(side, reserved))
+    } else {
+      parents <- selectInd(lines, n_parents)
+    }
+    tracker$record(parents, year = cycle * 4, released_lines = selectInd(lines, 3))
+  }
+  asr_summary(tracker)
+}
+```
+
+The two functions differ only in where `side` comes from.
+
+## One study, two specs
+
+`sim_set()` holds several specs, and `sim_map()` runs the same tuning call
+on each. Both use the same founders and the same replicate seeds, so every
+comparison is paired, between strategies as well as between shares.
+
+```{r}
+founders <- asr_founders(n_founders = 60, n_chr = 10, seg_sites = 150, qtl_per_chr = 15)
+set <- sim_set(
+  bridging = alphasim_program(bridging, share = tune(), founders = founders),
+  prebreeding = alphasim_program(prebreeding, share = tune(), founders = founders)
+)
+set <- sim_map(set, "tune_grid", resamples = sim_replicates(15, seed = 1),
+               grid = data.frame(share = c(0, 0.15, 0.3)),
+               metrics = sim_metric_set(release_gain, genetic_variance),
+               control = control_sim(save_outcomes = TRUE))
+rank_results(set, rank_metric = "release_gain")[, c("wflow_id", "rank", "parameters", "release_gain",
+                                                    "release_gain_se", "genetic_variance")]
+```
+
+`rank_results()` puts every design of every spec in one table, with its
+settings in `parameters`. The two
+`share = 0` rows are the same elite-only program run through each spec, and
+they agree exactly, because both ran on the same seeds.
+
+## Over time
+
+`extract_sim_result()` pulls out one spec's results, so trajectories can be
+collected from each and combined:
+
+```{r, fig.alt = "Mean genetic value of the parents over 60 years. Parent sets that include bridging lines stay below the elite-only program for most of the period; pre-breeding with 30 percent of the budget dips early, then passes it after about 30 years."}
+traj <- rbind(
+  transform(collect_trajectories(extract_sim_result(set, "bridging")), strategy = "Bridging"),
+  transform(collect_trajectories(extract_sim_result(set, "prebreeding")), strategy = "Pre-breeding")
+)
+avg <- aggregate(mean ~ strategy + share + year, data = traj, FUN = mean)
+avg$design <- ifelse(avg$share == 0, "Elite only", paste0(avg$strategy, ", ", 100 * avg$share, "%"))
+avg <- avg[!(avg$share == 0 & avg$strategy == "Pre-breeding"), ]
+
+ggplot(avg, aes(year, mean, colour = design)) +
+  geom_line(linewidth = 0.9) +
+  scale_colour_manual(values = c("Elite only" = "black", "Bridging, 15%" = "#FDBB84",
+                                 "Bridging, 30%" = "#E45756", "Pre-breeding, 15%" = "#9ECAE9",
+                                 "Pre-breeding, 30%" = "#4C78A8")) +
+  labs(x = "Year", y = "Mean genetic value of parents\n(elite genetic SDs)", colour = NULL,
+       title = "Pre-breeding lines catch up; raw bridging lines lag")
+```
+
+```{r}
+pre <- extract_sim_result(set, "prebreeding")
+m <- collect_metrics(pre, type = "wide")
+compare_designs(pre, m$.config[m$share == 0], m$.config[m$share == 0.3], metric = "release_gain")
+```
+
+## What it shows
+
+* **Both ways of using exotics beat elite only.** After 15 cycles, every
+  design that spends part of the budget on exotic material releases better
+  lines than the elite-only program. Pre-breeding with 30% of the budget
+  ranks first, about half a genetic SD ahead of elite only (the paired
+  comparison above). The other three are within about one standard error of
+  each other.
+* **Pre-breeding lines earn their parent slots.** The plot follows the mean
+  of the whole parent set, including the three reserved slots. Pre-breeding
+  lines improve cycle after cycle, so with 30% of the budget the parent set
+  catches up after about 20 years and pulls ahead after 30. Fresh bridging
+  lines start from germplasm far below the elite every cycle, so they pull
+  the parent mean down for most of the 60 years. They still add useful
+  alleles, which is why the lines released from the elite crosses gain.
+* **Read diversity metrics with care.** Bridging finishes with by far the
+  highest `genetic_variance` among its parents, but most of that is the gap
+  between three poor bridging lines and twelve elite lines, not variation
+  the elite program can use right away. A metric is only as good as what it
+  measures. Here, genetic variance among the *elite* lines, or the gain of
+  later cycles, would be fairer measures of useful diversity.
+* **The answer depends on the germplasm.** In the introgression article,
+  where exotics were unselected rather than poorly adapted, the cost of
+  bridging was smaller. How far below the elite your exotic sources are is
+  the assumption to get right. A scenario over it, for example through the
+  number of generations of selection against yield in `make_pools()`, is
+  the natural next study.
+
+## Make it yours
+
+* Make `reserved`, the quarter of pre-breeding crosses that go back to
+  elite, and the number of pre-breeding parents all `tune()` arguments, and
+  search them with `tune_bayes()`.
+* Give the pre-breeding program its own, cheaper trials (one rep, one
+  location), and move the money saved into more lines.
+* Add a third spec to the set, such as a program that runs bridging and
+  pre-breeding side by side, and rank all three with `rank_results()`.
+* Use your own elite and exotic marker data through
+  `asr_founders(haplotypes = )`.

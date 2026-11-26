@@ -22,6 +22,8 @@
   and an article on planning a backcross.
 * Article: writing your own AlphaSimR program with `alphasim_program()`,
   step by step.
+* Article comparing bridging crosses with a separate pre-breeding program,
+  using `sim_set()`.
 * Article on balancing an elite program against exotic (wild soja) bridging
   crosses; backcrossing terms in the glossary and cheat sheet.
 * More articles: glossary, cheat sheet, selection intensity versus diversity,
