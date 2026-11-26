@@ -17,6 +17,7 @@ articles:
   - articles/why-simulate
   - articles/replicates
   - articles/choosing-designs
+  - articles/alphasim-programs
   - articles/glossary
   - articles/cheatsheet
 - title: Breeding problems
@@ -30,6 +31,7 @@ articles:
   - articles/genomic-selection
   - articles/backcrossing
   - articles/introgression
+  - articles/program-balance
   - articles/gene-pyramiding
   - mapping-design
 

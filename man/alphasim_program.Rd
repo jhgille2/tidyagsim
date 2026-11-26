@@ -45,6 +45,11 @@ the results. Mark any argument with \code{tune()} to search over it.
 Inside \code{program}, \code{SP} is also bound globally while it runs, so AlphaSimR
 calls work with or without \code{simParam = SP}.
 
+Helper functions and objects that \code{program} uses from your workspace are
+copied into the spec when it is created, so it also runs on parallel
+workers (\code{control_sim(parallel = TRUE)}). Recreate the spec after changing
+a helper.
+
 Use \code{\link[=asr_tracker]{asr_tracker()}} inside \code{program} to record the population each year
 and \code{\link[=asr_summary]{asr_summary()}} to turn the record into the built-in breeding metrics
 (\code{release_gain}, \code{gain_per_year}, \code{genetic_variance}, \code{cost}, ...).
@@ -70,4 +75,8 @@ recurrent <- alphasim_program(
 res <- tune_grid(recurrent, sim_replicates(10), grid = 5)
 autoplot(res)
 }
+}
+\seealso{
+The article "Writing your own AlphaSimR program" builds a program step by step:
+\url{https://jhgille2.github.io/tidyagsim/articles/alphasim-programs.html}.
 }

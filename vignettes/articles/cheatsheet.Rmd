@@ -19,6 +19,7 @@ library(AlphaSimR)
 spec <- line_pipeline(n_ayt = tune(), ayt_locations = tune(), cycles = 4)
 
 # Your own AlphaSimR scheme: one replicate as a function
+# (step by step: vignette article "Writing your own AlphaSimR program")
 spec <- alphasim_program(
   function(founders, SP, n_select, cycles) {
     tracker <- asr_tracker(founders)

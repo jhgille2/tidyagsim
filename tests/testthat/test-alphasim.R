@@ -101,3 +101,29 @@ test_that("PYT screen and off-season costs are accounted", {
   clean <- sim_simulate(small_line(), small_line()$args, 1:3)
   expect_lt(mean(vapply(noisy, `[[`, 0, "accuracy")), mean(vapply(clean, `[[`, 0, "accuracy")))
 })
+
+test_that("alphasim_program carries workspace helpers to parallel workers", {
+  skip_if_not_installed("future.apply")
+  skip_on_cran()
+  genv <- globalenv()
+  on.exit(rm(list = intersect(c("tg_gain", "tg_scale", "tg_program"), ls(genv)), envir = genv), add = TRUE)
+  eval(quote({
+    tg_scale <- 2
+    tg_gain <- function(pop) tg_scale * mean(AlphaSimR::gv(pop))
+    tg_program <- function(founders, SP, k) {
+      pop <- AlphaSimR::selectInd(AlphaSimR::setPheno(founders), k)
+      list(y = tg_gain(pop))
+    }
+  }), genv)
+  spec <- alphasim_program(get("tg_program", genv), k = tune(), founders = asr_founders(n_founders = 20, n_chr = 2, seg_sites = 20))
+  expect_true(exists("tg_gain", envir = environment(spec$program), inherits = FALSE))
+  expect_false(exists("SP", envir = environment(spec$program), inherits = FALSE))
+  old <- future::plan(future::multisession, workers = 2)
+  on.exit(future::plan(old), add = TRUE)
+  grid <- data.frame(k = c(5L, 10L))
+  par <- tune_grid(spec, sim_replicates(2), grid = grid, metrics = sim_metric_set(sim_metric("y", "maximize")),
+                   control = control_sim(parallel = TRUE))
+  seq <- tune_grid(spec, sim_replicates(2), grid = grid, metrics = sim_metric_set(sim_metric("y", "maximize")))
+  expect_equal(nrow(collect_metrics(par)), 2)
+  expect_equal(collect_metrics(par)$mean, collect_metrics(seq)$mean)
+})
