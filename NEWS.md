@@ -20,6 +20,10 @@
   (single or multiple targets, simultaneous or parallel streams), with
   `bc_expected_recovery()` and `min_population_size()` from backcross theory,
   and an article on planning a backcross.
+* `alphasim_program()` copies the helper functions and objects a program uses
+  from the workspace into the spec, so programs written as scripts run on
+  parallel workers. Replicate seeds now fix the random number generator kind,
+  so parallel and sequential runs give identical results.
 * Article: writing your own AlphaSimR program with `alphasim_program()`,
   step by step.
 * Article comparing bridging crosses with a separate pre-breeding program,

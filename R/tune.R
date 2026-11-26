@@ -9,7 +9,10 @@ with_seed <- function(seed, expr) {
       assign(".Random.seed", old, envir = globalenv())
     }
   })
-  set.seed(seed)
+  # Fix the generator too: parallel workers (future.seed = TRUE) switch to
+  # L'Ecuyer-CMRG, which would give different draws from the same seed.
+  # Restoring .Random.seed afterwards restores the caller's generator.
+  set.seed(seed, kind = "Mersenne-Twister", normal.kind = "Inversion", sample.kind = "Rejection")
   expr
 }
 

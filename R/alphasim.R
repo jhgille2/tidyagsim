@@ -128,6 +128,11 @@ with_global_sp <- function(SP, expr) {
 #' Inside `program`, `SP` is also bound globally while it runs, so AlphaSimR
 #' calls work with or without `simParam = SP`.
 #'
+#' Helper functions and objects that `program` uses from your workspace are
+#' copied into the spec when it is created, so it also runs on parallel
+#' workers (`control_sim(parallel = TRUE)`). Recreate the spec after changing
+#' a helper.
+#'
 #' Use [asr_tracker()] inside `program` to record the population each year
 #' and [asr_summary()] to turn the record into the built-in breeding metrics
 #' (`release_gain`, `gain_per_year`, `genetic_variance`, `cost`, ...).
@@ -176,8 +181,38 @@ alphasim_program <- function(program, ..., founders = asr_founders(), params = l
     abort("`program` must start with the arguments `founders` and `SP`.")
   }
   if (!inherits(founders, "asr_founders")) abort("`founders` must come from asr_founders().")
-  new_sim_spec("alphasim_program", list(...), engine = "AlphaSimR", program = program, founders = founders,
+  new_sim_spec("alphasim_program", list(...), engine = "AlphaSimR", program = bundle_globals(program),
+               founders = founders,
                params = params, check = check, default_metrics = metrics)
+}
+
+# A program written at the top level of a script usually calls helper functions
+# and objects defined next to it. Parallel workers and saved specs do not see
+# the user's workspace, so copy what the program needs from the global
+# environment into an environment of its own (following helpers that call
+# helpers). `SP` is left out on purpose: it is bound globally during each run.
+bundle_globals <- function(fn) {
+  genv <- globalenv()
+  if (!identical(environment(fn), genv)) return(fn)
+  env <- new.env(parent = genv)
+  queue <- list(fn)
+  seen <- "SP"
+  while (length(queue)) {
+    f <- queue[[1]]
+    queue <- queue[-1]
+    for (nm in setdiff(codetools::findGlobals(f, merge = TRUE), seen)) {
+      seen <- c(seen, nm)
+      if (!exists(nm, envir = genv, inherits = FALSE)) next
+      obj <- get(nm, envir = genv)
+      if (is.function(obj) && identical(environment(obj), genv)) {
+        environment(obj) <- env
+        queue[[length(queue) + 1]] <- obj
+      }
+      assign(nm, obj, envir = env)
+    }
+  }
+  environment(fn) <- env
+  fn
 }
 
 #' @export
