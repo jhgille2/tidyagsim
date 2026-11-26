@@ -2,9 +2,14 @@ pandoc: 3.8.3
 pkgdown: 2.2.1
 pkgdown_sha: ~
 articles:
+  articles/choosing-designs: choosing-designs.html
+  articles/gene-pyramiding: gene-pyramiding.html
   mapping-design: mapping-design.html
+  articles/replicates: replicates.html
   tidyagsim: tidyagsim.html
-last_built: 2026-11-25T23:10Z
+  articles/why-simulate: why-simulate.html
+  articles/yield-trials: yield-trials.html
+last_built: 2026-11-26T00:36Z
 urls:
   reference: https://jhgille2.github.io/tidyagsim/reference
   article: https://jhgille2.github.io/tidyagsim/articles

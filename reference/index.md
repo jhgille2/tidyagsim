@@ -5,12 +5,16 @@
 What to simulate. Set any argument to
 [`tune()`](https://hardhat.tidymodels.org/reference/tune.html).
 
+- [`alphasim_program()`](https://jhgille2.github.io/tidyagsim/reference/alphasim_program.md)
+  : A simulation spec from an AlphaSimR script
+- [`line_pipeline()`](https://jhgille2.github.io/tidyagsim/reference/line_pipeline.md)
+  : A soybean-style inbred line breeding pipeline
 - [`mapping_population()`](https://jhgille2.github.io/tidyagsim/reference/mapping_population.md)
   : Mapping population design
-- [`breeding_program()`](https://jhgille2.github.io/tidyagsim/reference/breeding_program.md)
-  : A breedsim breeding program as a simulation spec
 - [`sim_function()`](https://jhgille2.github.io/tidyagsim/reference/sim_function.md)
   : A simulation spec from any R function
+- [`breeding_program()`](https://jhgille2.github.io/tidyagsim/reference/breeding_program.md)
+  : A breedsim breeding program as a simulation spec
 - [`set_args()`](https://jhgille2.github.io/tidyagsim/reference/set_args.md)
   : Change the arguments of a spec
 - [`set_engine()`](https://jhgille2.github.io/tidyagsim/reference/set_engine.md)
@@ -19,6 +23,19 @@ What to simulate. Set any argument to
   : Finalize a spec with chosen values
 - [`is_tune()`](https://jhgille2.github.io/tidyagsim/reference/is_tune.md)
   : Is an argument a tune() placeholder?
+
+## AlphaSimR helpers
+
+Founders, and turning a run into breeding metrics.
+
+- [`asr_founders()`](https://jhgille2.github.io/tidyagsim/reference/asr_founders.md)
+  : Founder population recipe for AlphaSimR
+- [`asr_tracker()`](https://jhgille2.github.io/tidyagsim/reference/asr_tracker.md)
+  : Record a breeding program as it runs
+- [`asr_summary()`](https://jhgille2.github.io/tidyagsim/reference/asr_summary.md)
+  : Summarize a tracked program into breeding metrics
+- [`collect_trajectories()`](https://jhgille2.github.io/tidyagsim/reference/collect_trajectories.md)
+  : Collect yearly trajectories from a study
 
 ## Parameters
 

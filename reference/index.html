@@ -20,7 +20,14 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Case studies</h6></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Get started</h6></li>
+    <li><a class="dropdown-item" href="../articles/why-simulate.html">Why simulate a breeding program?</a></li>
+    <li><a class="dropdown-item" href="../articles/replicates.html">How many replicates do I need?</a></li>
+    <li><a class="dropdown-item" href="../articles/choosing-designs.html">Choosing a design</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Breeding problems</h6></li>
+    <li><a class="dropdown-item" href="../articles/yield-trials.html">Allocating yield trial plots</a></li>
+    <li><a class="dropdown-item" href="../articles/gene-pyramiding.html">Pyramiding resistance genes with markers</a></li>
     <li><a class="dropdown-item" href="../articles/mapping-design.html">Designing a QTL mapping population</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -50,6 +57,20 @@
 
       <dl><dt>
 
+          <code><a href="alphasim_program.html">alphasim_program()</a></code>
+
+        </dt>
+        <dd>A simulation spec from an AlphaSimR script</dd>
+
+        <dt>
+
+          <code><a href="line_pipeline.html">line_pipeline()</a></code>
+
+        </dt>
+        <dd>A soybean-style inbred line breeding pipeline</dd>
+
+        <dt>
+
           <code><a href="mapping_population.html">mapping_population()</a></code>
 
         </dt>
@@ -57,17 +78,17 @@
 
         <dt>
 
-          <code><a href="breeding_program.html">breeding_program()</a></code>
-
-        </dt>
-        <dd>A breedsim breeding program as a simulation spec</dd>
-
-        <dt>
-
           <code><a href="sim_function.html">sim_function()</a></code>
 
         </dt>
         <dd>A simulation spec from any R function</dd>
+
+        <dt>
+
+          <code><a href="breeding_program.html">breeding_program()</a></code>
+
+        </dt>
+        <dd>A breedsim breeding program as a simulation spec</dd>
 
         <dt>
 
@@ -96,6 +117,43 @@
 
         </dt>
         <dd>Is an argument a tune() placeholder?</dd>
+      </dl></div><div class="section level2">
+      <h2 id="alphasimr-helpers">AlphaSimR helpers<a class="anchor" aria-label="anchor" href="#alphasimr-helpers"></a></h2>
+
+      <div class="section-desc"><p>Founders, and turning a run into breeding metrics.</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="asr_founders.html">asr_founders()</a></code>
+
+        </dt>
+        <dd>Founder population recipe for AlphaSimR</dd>
+
+        <dt>
+
+          <code><a href="asr_tracker.html">asr_tracker()</a></code>
+
+        </dt>
+        <dd>Record a breeding program as it runs</dd>
+
+        <dt>
+
+          <code><a href="asr_summary.html">asr_summary()</a></code>
+
+        </dt>
+        <dd>Summarize a tracked program into breeding metrics</dd>
+
+        <dt>
+
+          <code><a href="collect_trajectories.html">collect_trajectories()</a></code>
+
+        </dt>
+        <dd>Collect yearly trajectories from a study</dd>
       </dl></div><div class="section level2">
       <h2 id="parameters">Parameters<a class="anchor" aria-label="anchor" href="#parameters"></a></h2>
 

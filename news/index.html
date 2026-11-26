@@ -20,7 +20,14 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Case studies</h6></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Get started</h6></li>
+    <li><a class="dropdown-item" href="../articles/why-simulate.html">Why simulate a breeding program?</a></li>
+    <li><a class="dropdown-item" href="../articles/replicates.html">How many replicates do I need?</a></li>
+    <li><a class="dropdown-item" href="../articles/choosing-designs.html">Choosing a design</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Breeding problems</h6></li>
+    <li><a class="dropdown-item" href="../articles/yield-trials.html">Allocating yield trial plots</a></li>
+    <li><a class="dropdown-item" href="../articles/gene-pyramiding.html">Pyramiding resistance genes with markers</a></li>
     <li><a class="dropdown-item" href="../articles/mapping-design.html">Designing a QTL mapping population</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -46,6 +53,9 @@
 <code><a href="../reference/mapping_population.html">mapping_population()</a></code>: F2, RIL, BCsFt, NAM, AB-NAM and MAGIC populations with marker, family and founder-haplotype scans.</li>
 <li>
 <code><a href="../reference/breeding_program.html">breeding_program()</a></code>: breedsim flowchart programs via reticulate.</li>
+<li>AlphaSimR engine: <code><a href="../reference/alphasim_program.html">alphasim_program()</a></code> turns any AlphaSimR script into a tunable spec, with reproducible founders shared across designs (<code><a href="../reference/asr_founders.html">asr_founders()</a></code>), <code><a href="../reference/asr_tracker.html">asr_tracker()</a></code> / <code><a href="../reference/asr_summary.html">asr_summary()</a></code> for breeding metrics and <code><a href="../reference/collect_trajectories.html">collect_trajectories()</a></code> for yearly records. <code><a href="../reference/line_pipeline.html">line_pipeline()</a></code> is a ready-made inbred line pipeline with G×E, costs and time.</li>
+<li>A data-frame <code>grid</code> now supplies ranges for tuned arguments that have no default range.</li>
+<li>Beginner articles (why simulate, how many replicates, choosing a design) and case studies (yield trial allocation, gene pyramiding).</li>
 </ul></div>
   </main></div>
 

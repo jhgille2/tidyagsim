@@ -17,3 +17,20 @@
   and founder-haplotype scans.
 - [`breeding_program()`](https://jhgille2.github.io/tidyagsim/reference/breeding_program.md):
   breedsim flowchart programs via reticulate.
+- AlphaSimR engine:
+  [`alphasim_program()`](https://jhgille2.github.io/tidyagsim/reference/alphasim_program.md)
+  turns any AlphaSimR script into a tunable spec, with reproducible
+  founders shared across designs
+  ([`asr_founders()`](https://jhgille2.github.io/tidyagsim/reference/asr_founders.md)),
+  [`asr_tracker()`](https://jhgille2.github.io/tidyagsim/reference/asr_tracker.md)
+  /
+  [`asr_summary()`](https://jhgille2.github.io/tidyagsim/reference/asr_summary.md)
+  for breeding metrics and
+  [`collect_trajectories()`](https://jhgille2.github.io/tidyagsim/reference/collect_trajectories.md)
+  for yearly records.
+  [`line_pipeline()`](https://jhgille2.github.io/tidyagsim/reference/line_pipeline.md)
+  is a ready-made inbred line pipeline with G×E, costs and time.
+- A data-frame `grid` now supplies ranges for tuned arguments that have
+  no default range.
+- Beginner articles (why simulate, how many replicates, choosing a
+  design) and case studies (yield trial allocation, gene pyramiding).

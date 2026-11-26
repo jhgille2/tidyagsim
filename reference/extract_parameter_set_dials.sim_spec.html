@@ -24,7 +24,14 @@ the result to a tuner as param_info."></head><body>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Case studies</h6></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Get started</h6></li>
+    <li><a class="dropdown-item" href="../articles/why-simulate.html">Why simulate a breeding program?</a></li>
+    <li><a class="dropdown-item" href="../articles/replicates.html">How many replicates do I need?</a></li>
+    <li><a class="dropdown-item" href="../articles/choosing-designs.html">Choosing a design</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Breeding problems</h6></li>
+    <li><a class="dropdown-item" href="../articles/yield-trials.html">Allocating yield trial plots</a></li>
+    <li><a class="dropdown-item" href="../articles/gene-pyramiding.html">Pyramiding resistance genes with markers</a></li>
     <li><a class="dropdown-item" href="../articles/mapping-design.html">Designing a QTL mapping population</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -53,7 +60,7 @@ the result to a tuner as <code>param_info</code>.</p>
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># S3 method for class 'sim_spec'</span></span>
-<span><span class="fu"><a href="https://hardhat.tidymodels.org/reference/hardhat-extract.html" class="external-link">extract_parameter_set_dials</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://hardhat.tidymodels.org/reference/hardhat-extract.html" class="external-link">extract_parameter_set_dials</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">...</span>, grid <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -66,6 +73,11 @@ the result to a tuner as <code>param_info</code>.</p>
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Not used.</p></dd>
+
+
+<dt id="arg-grid">grid<a class="anchor" aria-label="anchor" href="#arg-grid"></a></dt>
+<dd><p>Optional data frame of designs; tuned arguments without a
+default range take theirs from its values.</p></dd>
 
 </dl></div>
     <div class="section level2">

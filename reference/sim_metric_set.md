@@ -27,9 +27,9 @@ A `sim_metric_set`.
 Built-in metrics: `power`, `other_peaks`, `location_error`,
 `support_interval`, `peak_lod`, `realized_pve`, `threshold` (mapping);
 `release_gain`, `gain_per_year`, `gain_per_cost`,
-`expected_heterozygosity`, `genetic_variance` (breeding programs);
-`lines`, `plots`, `genotyped`, `crosses`, `cost`, `years`, `generations`
-(resources).
+`expected_heterozygosity`, `genetic_variance`, `accuracy` (breeding
+programs); `lines`, `plots`, `genotyped`, `crosses`, `cost`, `years`,
+`generations` (resources).
 
 ## Examples
 

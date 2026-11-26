@@ -10,7 +10,7 @@ tidymodels, and pass the result to a tuner as `param_info`.
 
 ``` r
 # S3 method for class 'sim_spec'
-extract_parameter_set_dials(x, ...)
+extract_parameter_set_dials(x, ..., grid = NULL)
 ```
 
 ## Arguments
@@ -22,6 +22,11 @@ extract_parameter_set_dials(x, ...)
 - ...:
 
   Not used.
+
+- grid:
+
+  Optional data frame of designs; tuned arguments without a default
+  range take theirs from its values.
 
 ## Value
 

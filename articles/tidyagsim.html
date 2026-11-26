@@ -34,7 +34,14 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Case studies</h6></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Get started</h6></li>
+    <li><a class="dropdown-item" href="../articles/why-simulate.html">Why simulate a breeding program?</a></li>
+    <li><a class="dropdown-item" href="../articles/replicates.html">How many replicates do I need?</a></li>
+    <li><a class="dropdown-item" href="../articles/choosing-designs.html">Choosing a design</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Breeding problems</h6></li>
+    <li><a class="dropdown-item" href="../articles/yield-trials.html">Allocating yield trial plots</a></li>
+    <li><a class="dropdown-item" href="../articles/gene-pyramiding.html">Pyramiding resistance genes with markers</a></li>
     <li><a class="dropdown-item" href="../articles/mapping-design.html">Designing a QTL mapping population</a></li>
   </ul>
 </li>
@@ -67,10 +74,10 @@
 
     
     
-<p>tidyagsim brings the grammar of <a href="https://www.tidymodels.org/" class="external-link">tidymodels</a> to stochastic
-simulation studies. If you have tuned a model with
-<code><a href="../reference/tune_grid.html">tune_grid()</a></code>, you already know how to run a simulation
-experiment with it:</p>
+<p>tidyagsim extends <a href="https://cran.r-project.org/package=AlphaSimR" class="external-link">AlphaSimR</a>, and
+any other simulator you can call from R, with the grammar of <a href="https://www.tidymodels.org/" class="external-link">tidymodels</a>. If you have tuned a
+model with <code><a href="../reference/tune_grid.html">tune_grid()</a></code>, you already know how to run a
+simulation experiment with it:</p>
 <table class="table">
 <colgroup>
 <col width="33%">
@@ -85,8 +92,9 @@ experiment with it:</p>
 <tbody>
 <tr class="odd">
 <td>parsnip model spec</td>
-<td>simulation spec: <code><a href="../reference/mapping_population.html">mapping_population()</a></code>,
-<code><a href="../reference/breeding_program.html">breeding_program()</a></code>, <code><a href="../reference/sim_function.html">sim_function()</a></code>
+<td>simulation spec: <code><a href="../reference/alphasim_program.html">alphasim_program()</a></code>,
+<code><a href="../reference/line_pipeline.html">line_pipeline()</a></code>, <code><a href="../reference/mapping_population.html">mapping_population()</a></code>,
+<code><a href="../reference/sim_function.html">sim_function()</a></code>
 </td>
 <td>the simulator and its arguments</td>
 </tr>
@@ -336,16 +344,24 @@ design that keeps yield above 9:</p>
 <div class="section level2">
 <h2 id="real-simulators">Real simulators<a class="anchor" aria-label="anchor" href="#real-simulators"></a>
 </h2>
+<p>The toy trial above shows the grammar. The same verbs run real
+breeding simulations:</p>
 <ul>
+<li>
+<code><a href="../reference/alphasim_program.html">alphasim_program()</a></code> turns your own AlphaSimR script into
+a spec: write one replicate as a function of the founders,
+<code>SP</code> and your design arguments. <code><a href="../reference/line_pipeline.html">line_pipeline()</a></code>
+is a ready-made soybean-style line pipeline built on it. Start with the
+<a href="https://jhgille2.github.io/tidyagsim/articles/why-simulate.html">Why
+simulate?</a> article.</li>
 <li>
 <code><a href="../reference/mapping_population.html">mapping_population()</a></code> simulates QTL mapping populations
 (F2, RIL, BC<em>s</em>F<em>t</em>, NAM, advanced-backcross NAM and
-MAGIC). See <code><a href="../articles/mapping-design.html">vignette("mapping-design")</a></code> for a full
-study.</li>
+MAGIC). See <code><a href="../articles/mapping-design.html">vignette("mapping-design")</a></code>.</li>
 <li>
 <code><a href="../reference/breeding_program.html">breeding_program()</a></code> runs a breedsim flowchart program
-with the AlphaSimR engine; its fields are tuned by
-<code>"stage.field"</code> path.</li>
+from the desktop app; its fields are tuned by <code>"stage.field"</code>
+path.</li>
 </ul>
 </div>
 <div class="section level2">

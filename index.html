@@ -4,14 +4,14 @@
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Tidymodels-Style Tuning and Replication for Agricultural Simulations • tidyagsim</title>
+<title>Tidymodels-Style Tuning and Replication for AlphaSimR and Other Breeding Simulations • tidyagsim</title>
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Tidymodels-Style Tuning and Replication for Agricultural Simulations">
-<meta name="description" content="Brings the grammar of the tidymodels packages to stochastic simulation studies in plant breeding. Mark the arguments of a simulation with tune(), describe replicate seeds and assumption scenarios, choose a metric set, and let grid search, racing or Bayesian optimization run the experiment without enumerating every combination by hand. Results are tidy tibbles with Monte Carlo standard errors, and helpers such as show_best() and select_by_one_std_err() pick designs. Includes a fast simulator for QTL mapping populations (F2, recombinant inbred lines, BCsFt, nested association mapping, advanced-backcross NAM and MAGIC) and an engine for breedsim breeding-program flowcharts.">
-<meta property="og:description" content="Brings the grammar of the tidymodels packages to stochastic simulation studies in plant breeding. Mark the arguments of a simulation with tune(), describe replicate seeds and assumption scenarios, choose a metric set, and let grid search, racing or Bayesian optimization run the experiment without enumerating every combination by hand. Results are tidy tibbles with Monte Carlo standard errors, and helpers such as show_best() and select_by_one_std_err() pick designs. Includes a fast simulator for QTL mapping populations (F2, recombinant inbred lines, BCsFt, nested association mapping, advanced-backcross NAM and MAGIC) and an engine for breedsim breeding-program flowcharts.">
+<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Tidymodels-Style Tuning and Replication for AlphaSimR and Other Breeding Simulations">
+<meta name="description" content="Extends AlphaSimR with the grammar of the tidymodels packages, so that plant breeding simulation studies are set up like a model-tuning job. Write a breeding scheme once, mark its design choices with tune(), describe replicate seeds and assumption scenarios, choose a metric set, and let grid search, racing or Bayesian optimization run the experiment without enumerating every combination by hand. Results are tidy tibbles with Monte Carlo standard errors, and helpers such as show_best(), select_by_one_std_err() and pareto_front() pick designs. Includes a ready-made inbred line pipeline, a fast simulator for QTL mapping populations (F2, recombinant inbred lines, BCsFt, nested association mapping, advanced-backcross NAM and MAGIC), and engines for any R function and for breedsim breeding-program flowcharts.">
+<meta property="og:description" content="Extends AlphaSimR with the grammar of the tidymodels packages, so that plant breeding simulation studies are set up like a model-tuning job. Write a breeding scheme once, mark its design choices with tune(), describe replicate seeds and assumption scenarios, choose a metric set, and let grid search, racing or Bayesian optimization run the experiment without enumerating every combination by hand. Results are tidy tibbles with Monte Carlo standard errors, and helpers such as show_best(), select_by_one_std_err() and pareto_front() pick designs. Includes a ready-made inbred line pipeline, a fast simulator for QTL mapping populations (F2, recombinant inbred lines, BCsFt, nested association mapping, advanced-backcross NAM and MAGIC), and engines for any R function and for breedsim breeding-program flowcharts.">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -36,7 +36,14 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Case studies</h6></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Get started</h6></li>
+    <li><a class="dropdown-item" href="articles/why-simulate.html">Why simulate a breeding program?</a></li>
+    <li><a class="dropdown-item" href="articles/replicates.html">How many replicates do I need?</a></li>
+    <li><a class="dropdown-item" href="articles/choosing-designs.html">Choosing a design</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Breeding problems</h6></li>
+    <li><a class="dropdown-item" href="articles/yield-trials.html">Allocating yield trial plots</a></li>
+    <li><a class="dropdown-item" href="articles/gene-pyramiding.html">Pyramiding resistance genes with markers</a></li>
     <li><a class="dropdown-item" href="articles/mapping-design.html">Designing a QTL mapping population</a></li>
   </ul>
 </li>
@@ -59,22 +66,43 @@
 </h1></div>
 <!-- badges: start -->
 
-<p>tidyagsim brings the grammar of <a href="https://www.tidymodels.org/" class="external-link">tidymodels</a> to stochastic simulation studies in plant breeding. Mark the arguments of a simulation with <code><a href="https://hardhat.tidymodels.org/reference/tune.html" class="external-link">tune()</a></code>, describe replicate seeds and assumption scenarios, choose a metric set, and let grid search, racing or Bayesian optimization run the experiment, without enumerating every combination by hand.</p>
+<p>tidyagsim extends <a href="https://cran.r-project.org/package=AlphaSimR" class="external-link">AlphaSimR</a> with the grammar of <a href="https://www.tidymodels.org/" class="external-link">tidymodels</a>. Write a breeding scheme once, mark the choices you want to compare with <code><a href="https://hardhat.tidymodels.org/reference/tune.html" class="external-link">tune()</a></code>, and let tidyagsim run every design on the same replicate seeds, summarize the results with Monte Carlo standard errors, and help you pick. No nested loops, no hand-built results tables.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jhgille2/tidyagsim" class="external-link">tidyagsim</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">spec</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/mapping_population.html">mapping_population</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"RIL"</span>, lines <span class="op">=</span> <span class="fu"><a href="https://hardhat.tidymodels.org/reference/tune.html" class="external-link">tune</a></span><span class="op">(</span><span class="op">)</span>, locations <span class="op">=</span> <span class="fu"><a href="https://hardhat.tidymodels.org/reference/tune.html" class="external-link">tune</a></span><span class="op">(</span><span class="op">)</span>, qtl_pve <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span></span>
+<span><span class="co"># A soybean-style line pipeline on AlphaSimR: how should 480 AYT plots be split?</span></span>
+<span><span class="va">pipeline</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/line_pipeline.html">line_pipeline</a></span><span class="op">(</span>n_ayt <span class="op">=</span> <span class="fu"><a href="https://hardhat.tidymodels.org/reference/tune.html" class="external-link">tune</a></span><span class="op">(</span><span class="op">)</span>, ayt_locations <span class="op">=</span> <span class="fu"><a href="https://hardhat.tidymodels.org/reference/tune.html" class="external-link">tune</a></span><span class="op">(</span><span class="op">)</span>, ayt_reps <span class="op">=</span> <span class="fu"><a href="https://hardhat.tidymodels.org/reference/tune.html" class="external-link">tune</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">designs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/expand.grid.html" class="external-link">expand.grid</a></span><span class="op">(</span>ayt_locations <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">4</span>, <span class="fl">8</span><span class="op">)</span>, ayt_reps <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">designs</span><span class="op">$</span><span class="va">n_ayt</span> <span class="op">&lt;-</span> <span class="fl">480</span> <span class="op">/</span> <span class="op">(</span><span class="va">designs</span><span class="op">$</span><span class="va">ayt_locations</span> <span class="op">*</span> <span class="va">designs</span><span class="op">$</span><span class="va">ayt_reps</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/tune_grid.html">tune_grid</a></span><span class="op">(</span></span>
-<span>  <span class="va">spec</span>,</span>
-<span>  resamples <span class="op">=</span> <span class="fu"><a href="reference/sim_replicates.html">sim_replicates</a></span><span class="op">(</span><span class="fl">40</span>, scenarios <span class="op">=</span> <span class="fu"><a href="reference/sim_scenarios.html">sim_scenarios</a></span><span class="op">(</span>qtl_pve <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.03</span>, <span class="fl">0.08</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  grid <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/expand.grid.html" class="external-link">expand.grid</a></span><span class="op">(</span>lines <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">200</span>, <span class="fl">400</span><span class="op">)</span>, locations <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span>,</span>
-<span>  metrics <span class="op">=</span> <span class="fu"><a href="reference/sim_metric_set.html">sim_metric_set</a></span><span class="op">(</span><span class="va">power</span>, <span class="va">location_error</span>, <span class="va">cost</span><span class="op">)</span></span>
+<span>  <span class="va">pipeline</span>,</span>
+<span>  resamples <span class="op">=</span> <span class="fu"><a href="reference/sim_replicates.html">sim_replicates</a></span><span class="op">(</span><span class="fl">20</span>, scenarios <span class="op">=</span> <span class="fu"><a href="reference/sim_scenarios.html">sim_scenarios</a></span><span class="op">(</span>gxe_var <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  grid <span class="op">=</span> <span class="va">designs</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="reference/collect_metrics.html">collect_metrics</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span>                                  <span class="co"># tidy means and Monte Carlo SEs</span></span>
-<span><span class="fu"><a href="reference/show_best.html">select_by_one_std_err</a></span><span class="op">(</span><span class="va">res</span>, <span class="va">cost</span>, metric <span class="op">=</span> <span class="st">"power"</span><span class="op">)</span>    <span class="co"># cheapest design near the best</span></span>
+<span><span class="fu"><a href="reference/collect_metrics.html">collect_metrics</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span>                          <span class="co"># tidy means and Monte Carlo SEs</span></span>
+<span><span class="fu"><a href="reference/show_best.html">show_best</a></span><span class="op">(</span><span class="va">res</span>, metric <span class="op">=</span> <span class="st">"gain_per_year"</span><span class="op">)</span></span>
 <span><span class="fu">autoplot</span><span class="op">(</span><span class="va">res</span><span class="op">)</span></span></code></pre></div>
+<p>Your own AlphaSimR scripts work the same way:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/gaynorr/AlphaSimR" class="external-link">AlphaSimR</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">recurrent</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/alphasim_program.html">alphasim_program</a></span><span class="op">(</span></span>
+<span>  <span class="kw">function</span><span class="op">(</span><span class="va">founders</span>, <span class="va">SP</span>, <span class="va">n_select</span>, <span class="va">cycles</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">tracker</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/asr_tracker.html">asr_tracker</a></span><span class="op">(</span><span class="va">founders</span><span class="op">)</span></span>
+<span>    <span class="va">pop</span> <span class="op">&lt;-</span> <span class="va">founders</span></span>
+<span>    <span class="kw">for</span> <span class="op">(</span><span class="va">cycle</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="va">cycles</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>      <span class="va">pop</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://gaynorr.github.io/AlphaSimR/reference/randCross.html" class="external-link">randCross</a></span><span class="op">(</span><span class="fu"><a href="https://gaynorr.github.io/AlphaSimR/reference/selectInd.html" class="external-link">selectInd</a></span><span class="op">(</span><span class="fu"><a href="https://gaynorr.github.io/AlphaSimR/reference/setPheno.html" class="external-link">setPheno</a></span><span class="op">(</span><span class="va">pop</span><span class="op">)</span>, <span class="va">n_select</span><span class="op">)</span>, nCrosses <span class="op">=</span> <span class="fl">200</span><span class="op">)</span></span>
+<span>      <span class="va">tracker</span><span class="op">$</span><span class="fu">record</span><span class="op">(</span><span class="va">pop</span>, year <span class="op">=</span> <span class="va">cycle</span>, cost <span class="op">=</span> <span class="fl">200</span> <span class="op">*</span> <span class="fl">15</span><span class="op">)</span></span>
+<span>    <span class="op">}</span></span>
+<span>    <span class="fu"><a href="reference/asr_summary.html">asr_summary</a></span><span class="op">(</span><span class="va">tracker</span><span class="op">)</span></span>
+<span>  <span class="op">}</span>,</span>
+<span>  n_select <span class="op">=</span> <span class="fu"><a href="https://hardhat.tidymodels.org/reference/tune.html" class="external-link">tune</a></span><span class="op">(</span><span class="op">)</span>, cycles <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>n_select <span class="op">=</span> <span class="fu"><a href="reference/sim_param.html">sim_param</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">60</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/tune_bayes.html">tune_bayes</a></span><span class="op">(</span><span class="va">recurrent</span>, <span class="fu"><a href="reference/sim_replicates.html">sim_replicates</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span>, constraints <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>genetic_variance <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>
 <col width="50%">
@@ -89,7 +117,7 @@
 <td>parsnip model spec + <code><a href="https://hardhat.tidymodels.org/reference/tune.html" class="external-link">tune()</a></code>
 </td>
 <td>
-<code><a href="reference/mapping_population.html">mapping_population()</a></code>, <code><a href="reference/breeding_program.html">breeding_program()</a></code>, <code><a href="reference/sim_function.html">sim_function()</a></code> + <code><a href="https://hardhat.tidymodels.org/reference/tune.html" class="external-link">tune()</a></code>
+<code><a href="reference/alphasim_program.html">alphasim_program()</a></code>, <code><a href="reference/line_pipeline.html">line_pipeline()</a></code>, <code><a href="reference/mapping_population.html">mapping_population()</a></code>, <code><a href="reference/sim_function.html">sim_function()</a></code> + <code><a href="https://hardhat.tidymodels.org/reference/tune.html" class="external-link">tune()</a></code>
 </td>
 </tr>
 <tr>
@@ -135,25 +163,45 @@
 </h2>
 <ul>
 <li>
-<strong><code><a href="reference/mapping_population.html">mapping_population()</a></code></strong>: a fast simulator for QTL mapping populations (F2, recombinant inbred lines, BC<em>s</em>F<em>t</em>, nested association mapping, advanced-backcross NAM and 4- or 8-way MAGIC), with genome scans, permutation thresholds, costs and time to results. See <code><a href="articles/mapping-design.html">vignette("mapping-design")</a></code>.</li>
+<strong><code><a href="reference/alphasim_program.html">alphasim_program()</a></code></strong>: any AlphaSimR breeding scheme, written as a function of the founders, <code>SP</code> and your design arguments. tidyagsim builds reproducible founders for each replicate (<code><a href="reference/asr_founders.html">asr_founders()</a></code>), and <code><a href="reference/asr_tracker.html">asr_tracker()</a></code> / <code><a href="reference/asr_summary.html">asr_summary()</a></code> turn a run into gain, gain per year, gain per cost, remaining genetic variance and diversity.</li>
 <li>
-<strong><code><a href="reference/breeding_program.html">breeding_program()</a></code></strong>: a breedsim breeding-program flowchart run by the AlphaSimR engine, tuned by <code>"stage.field"</code> paths.</li>
+<strong><code><a href="reference/line_pipeline.html">line_pipeline()</a></code></strong>: a ready-made inbred line pipeline (crossing, single-seed descent, PYT, AYT, release and parent recycling) with G×E, costs and time.</li>
+<li>
+<strong><code><a href="reference/mapping_population.html">mapping_population()</a></code></strong>: a fast simulator for QTL mapping populations (F2, recombinant inbred lines, BC<em>s</em>F<em>t</em>, nested association mapping, advanced-backcross NAM and 4- or 8-way MAGIC), with genome scans, permutation thresholds, costs and time to results.</li>
 <li>
 <strong><code><a href="reference/sim_function.html">sim_function()</a></code></strong>: any R function of its arguments and a seed.</li>
+<li>
+<strong><code><a href="reference/breeding_program.html">breeding_program()</a></code></strong>: a breedsim flowchart (from the desktop app), tuned by <code>"stage.field"</code> paths.</li>
 </ul>
+</div>
+<div class="section level2">
+<h2 id="learning-tidyagsim">Learning tidyagsim<a class="anchor" aria-label="anchor" href="#learning-tidyagsim"></a>
+</h2>
+<p>New to breeding simulation? The articles build up one idea at a time:</p>
+<ol style="list-style-type: decimal">
+<li>
+<a href="https://jhgille2.github.io/tidyagsim/articles/tidyagsim.html">Getting started</a>: the grammar in five minutes.</li>
+<li>
+<a href="https://jhgille2.github.io/tidyagsim/articles/why-simulate.html">Why simulate?</a>: checking a simulation against the breeder’s equation.</li>
+<li>
+<a href="https://jhgille2.github.io/tidyagsim/articles/replicates.html">How many replicates?</a>: Monte Carlo error and paired seeds.</li>
+<li>
+<a href="https://jhgille2.github.io/tidyagsim/articles/choosing-designs.html">Choosing a design</a>: budgets, the one-standard-error rule and Pareto fronts.</li>
+</ol>
+<p>Then the case studies: <a href="https://jhgille2.github.io/tidyagsim/articles/yield-trials.html">yield trial allocation</a>, <a href="https://jhgille2.github.io/tidyagsim/articles/gene-pyramiding.html">gene pyramiding</a> and <a href="https://jhgille2.github.io/tidyagsim/articles/mapping-design.html">mapping population design</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("pak")</span></span>
 <span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"jhgille2/tidyagsim"</span><span class="op">)</span></span></code></pre></div>
-<p>On Windows this needs only R (4.1 or later). For <code><a href="reference/breeding_program.html">breeding_program()</a></code> you also need Python with the breedsim package and the R packages AlphaSimR and jsonlite. From PowerShell, in a clone of plant_breeding_simulator_flowchart:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>py <span class="op">-</span>m venv <span class="op">.</span><span class="fu">venv</span></span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="op">.</span>\<span class="op">.</span><span class="fu">venv</span>\Scripts\Activate<span class="op">.</span><span class="fu">ps1</span></span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>python <span class="op">-</span>m pip install <span class="op">-</span>e <span class="op">.</span></span></code></pre></div>
+<p>On Windows this needs only R (4.1 or later); AlphaSimR installs from CRAN as a binary. For <code><a href="reference/breeding_program.html">breeding_program()</a></code> you also need Python with the breedsim package and the R package jsonlite. From PowerShell, in a clone of plant_breeding_simulator_flowchart:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>py <span class="op">-</span>m venv <span class="op">.</span><span class="fu">venv</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="op">.</span>\<span class="op">.</span><span class="fu">venv</span>\Scripts\Activate<span class="op">.</span><span class="fu">ps1</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>python <span class="op">-</span>m pip install <span class="op">-</span>e <span class="op">.</span></span></code></pre></div>
 <p>Then in R, point reticulate at that Python before loading tidyagsim:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>RETICULATE_PYTHON <span class="op">=</span> <span class="st">"C:/path/to/plant_breeding_simulator_flowchart/.venv/Scripts/python.exe"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>BREEDSIM_RSCRIPT <span class="op">=</span> <span class="st">"C:/Program Files/R/R-4.5.1/bin/Rscript.exe"</span><span class="op">)</span>  <span class="co"># if Rscript is not on PATH</span></span></code></pre></div>
 </div>

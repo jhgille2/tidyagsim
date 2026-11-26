@@ -1,14 +1,16 @@
 # Getting started with tidyagsim
 
-tidyagsim brings the grammar of
-[tidymodels](https://www.tidymodels.org/) to stochastic simulation
-studies. If you have tuned a model with
+tidyagsim extends
+[AlphaSimR](https://cran.r-project.org/package=AlphaSimR), and any other
+simulator you can call from R, with the grammar of
+[tidymodels](https://www.tidymodels.org/). If you have tuned a model
+with
 [`tune_grid()`](https://jhgille2.github.io/tidyagsim/reference/tune_grid.md),
 you already know how to run a simulation experiment with it:
 
 | tidymodels | tidyagsim | What it holds |
 |----|----|----|
-| parsnip model spec | simulation spec: [`mapping_population()`](https://jhgille2.github.io/tidyagsim/reference/mapping_population.md), [`breeding_program()`](https://jhgille2.github.io/tidyagsim/reference/breeding_program.md), [`sim_function()`](https://jhgille2.github.io/tidyagsim/reference/sim_function.md) | the simulator and its arguments |
+| parsnip model spec | simulation spec: [`alphasim_program()`](https://jhgille2.github.io/tidyagsim/reference/alphasim_program.md), [`line_pipeline()`](https://jhgille2.github.io/tidyagsim/reference/line_pipeline.md), [`mapping_population()`](https://jhgille2.github.io/tidyagsim/reference/mapping_population.md), [`sim_function()`](https://jhgille2.github.io/tidyagsim/reference/sim_function.md) | the simulator and its arguments |
 | [`tune()`](https://hardhat.tidymodels.org/reference/tune.html) | [`tune()`](https://hardhat.tidymodels.org/reference/tune.html) | “let the tuner choose this argument” |
 | dials parameters | [`extract_parameter_set_dials()`](https://hardhat.tidymodels.org/reference/hardhat-extract.html), [`n_lines()`](https://jhgille2.github.io/tidyagsim/reference/sim_params.md), [`filial_generation()`](https://jhgille2.github.io/tidyagsim/reference/sim_params.md), … | ranges of tuned arguments |
 | rsample resamples | [`sim_replicates()`](https://jhgille2.github.io/tidyagsim/reference/sim_replicates.md), [`sim_scenarios()`](https://jhgille2.github.io/tidyagsim/reference/sim_scenarios.md) | paired random seeds and assumption scenarios |
@@ -237,14 +239,24 @@ select_best(bo, metric = "cost", constraints = list(yield = 9))
 
 ## Real simulators
 
+The toy trial above shows the grammar. The same verbs run real breeding
+simulations:
+
+- [`alphasim_program()`](https://jhgille2.github.io/tidyagsim/reference/alphasim_program.md)
+  turns your own AlphaSimR script into a spec: write one replicate as a
+  function of the founders, `SP` and your design arguments.
+  [`line_pipeline()`](https://jhgille2.github.io/tidyagsim/reference/line_pipeline.md)
+  is a ready-made soybean-style line pipeline built on it. Start with
+  the [Why
+  simulate?](https://jhgille2.github.io/tidyagsim/articles/why-simulate.html)
+  article.
 - [`mapping_population()`](https://jhgille2.github.io/tidyagsim/reference/mapping_population.md)
   simulates QTL mapping populations (F2, RIL, BC*s*F*t*, NAM,
   advanced-backcross NAM and MAGIC). See
-  [`vignette("mapping-design")`](https://jhgille2.github.io/tidyagsim/articles/mapping-design.md)
-  for a full study.
+  [`vignette("mapping-design")`](https://jhgille2.github.io/tidyagsim/articles/mapping-design.md).
 - [`breeding_program()`](https://jhgille2.github.io/tidyagsim/reference/breeding_program.md)
-  runs a breedsim flowchart program with the AlphaSimR engine; its
-  fields are tuned by `"stage.field"` path.
+  runs a breedsim flowchart program from the desktop app; its fields are
+  tuned by `"stage.field"` path.
 
 ## Running big studies
 
