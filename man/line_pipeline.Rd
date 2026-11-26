@@ -11,7 +11,8 @@ line_pipeline(..., founders = asr_founders())
 \code{progeny_per_cross}, \code{line_generation}, \code{generations_per_year},
 \code{pyt_locations}, \code{pyt_reps}, \code{n_ayt}, \code{ayt_locations}, \code{ayt_reps},
 \code{n_release}, \code{cycles}, \code{gxe_var}, \code{cross_cost}, \code{ssd_cost}, \code{plot_cost},
-\code{max_plots}, \code{max_cost}, and any \code{\link[=asr_founders]{asr_founders()}} field such as \code{plot_h2}.}
+\code{pyt_plot_cost}, \code{pyt_error}, \code{offseason_cost}, \code{max_plots}, \code{max_cost},
+and any \code{\link[=asr_founders]{asr_founders()}} field such as \code{plot_h2}.}
 
 \item{founders}{An \code{\link[=asr_founders]{asr_founders()}} recipe.}
 }
@@ -52,9 +53,19 @@ A cycle takes \code{line_generation / generations_per_year} years in the
 nursery (crossing and selfing) plus one year for each trial. Cycles do not
 overlap, which keeps the model simple but understates the gain per year of
 programs that start new crosses every year. Cost adds crosses
-(\code{cross_cost}), single-seed-descent plants per generation (\code{ssd_cost}) and
-trial plots (\code{plot_cost}). Designs whose plots or cost per cycle exceed
-\code{max_plots} or \code{max_cost} are skipped as infeasible.
+(\code{cross_cost}), single-seed-descent plants per generation (\code{ssd_cost}),
+trial plots (\code{plot_cost}, or \code{pyt_plot_cost} for the PYT when it is
+phenotyped differently) and, for nursery generations grown outside the main
+season (\code{line_generation - ceiling(line_generation / generations_per_year)}
+of them), \code{offseason_cost} per line per generation. Designs whose plots or
+cost per cycle exceed \code{max_plots} or \code{max_cost} are skipped as infeasible.
+}
+
+\section{A different PYT phenotype}{
+
+\code{pyt_error} multiplies the PYT error variance and \code{pyt_plot_cost} sets its
+cost per plot, so a cheaper but noisier screen, such as drone imagery or a
+visual score, can be compared with conventional yield plots.
 }
 
 \section{Outcomes}{

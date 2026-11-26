@@ -4,7 +4,7 @@ line_defaults <- function() {
   list(n_parents = 30, n_crosses = 50, progeny_per_cross = 20, line_generation = 5, generations_per_year = 2,
        pyt_locations = 1, pyt_reps = 1, n_ayt = 100, ayt_locations = 4, ayt_reps = 2, n_release = 5,
        cycles = 4, gxe_var = 0.5, cross_cost = 25, ssd_cost = 2, plot_cost = 15,
-       max_plots = Inf, max_cost = Inf)
+       pyt_plot_cost = NA, pyt_error = 1, offseason_cost = 0, max_plots = Inf, max_cost = Inf)
 }
 
 #' A soybean-style inbred line breeding pipeline
@@ -37,9 +37,17 @@ line_defaults <- function() {
 #' nursery (crossing and selfing) plus one year for each trial. Cycles do not
 #' overlap, which keeps the model simple but understates the gain per year of
 #' programs that start new crosses every year. Cost adds crosses
-#' (`cross_cost`), single-seed-descent plants per generation (`ssd_cost`) and
-#' trial plots (`plot_cost`). Designs whose plots or cost per cycle exceed
-#' `max_plots` or `max_cost` are skipped as infeasible.
+#' (`cross_cost`), single-seed-descent plants per generation (`ssd_cost`),
+#' trial plots (`plot_cost`, or `pyt_plot_cost` for the PYT when it is
+#' phenotyped differently) and, for nursery generations grown outside the main
+#' season (`line_generation - ceiling(line_generation / generations_per_year)`
+#' of them), `offseason_cost` per line per generation. Designs whose plots or
+#' cost per cycle exceed `max_plots` or `max_cost` are skipped as infeasible.
+#'
+#' @section A different PYT phenotype:
+#' `pyt_error` multiplies the PYT error variance and `pyt_plot_cost` sets its
+#' cost per plot, so a cheaper but noisier screen, such as drone imagery or a
+#' visual score, can be compared with conventional yield plots.
 #'
 #' @section Outcomes:
 #' `release_gain` (genetic value of the last cycle's releases, in founder
@@ -54,7 +62,8 @@ line_defaults <- function() {
 #'   `progeny_per_cross`, `line_generation`, `generations_per_year`,
 #'   `pyt_locations`, `pyt_reps`, `n_ayt`, `ayt_locations`, `ayt_reps`,
 #'   `n_release`, `cycles`, `gxe_var`, `cross_cost`, `ssd_cost`, `plot_cost`,
-#'   `max_plots`, `max_cost`, and any [asr_founders()] field such as `plot_h2`.
+#'   `pyt_plot_cost`, `pyt_error`, `offseason_cost`, `max_plots`, `max_cost`,
+#'   and any [asr_founders()] field such as `plot_h2`.
 #' @param founders An [asr_founders()] recipe.
 #' @return A `line_pipeline` spec.
 #' @examples
@@ -91,7 +100,10 @@ sim_parameters.line_pipeline <- function(object, ...) {
          n_release = sim_param(c(1L, 20L), label = "Lines released per cycle"),
          cycles = sim_param(c(1L, 10L), label = "Breeding cycles"),
          gxe_var = sim_param(c(0, 2), type = "double", label = "GxE variance (founder Vg units)"),
-         plot_cost = sim_param(c(5, 50), type = "double", label = "Cost per plot")),
+         plot_cost = sim_param(c(5, 50), type = "double", label = "Cost per plot"),
+         pyt_plot_cost = sim_param(c(1, 50), type = "double", label = "Cost per PYT plot"),
+         pyt_error = sim_param(c(0.5, 10), type = "double", label = "PYT error multiplier"),
+         offseason_cost = sim_param(c(0, 20), type = "double", label = "Off-season cost per line per generation")),
     founder_parameters())
 }
 
@@ -102,11 +114,21 @@ sim_default_metrics.line_pipeline <- function(object) {
 
 line_resources <- function(a) {
   lines <- a$n_crosses * a$progeny_per_cross
-  plots <- lines * a$pyt_locations * a$pyt_reps + a$n_ayt * a$ayt_locations * a$ayt_reps
+  pyt_plots <- lines * a$pyt_locations * a$pyt_reps
+  ayt_plots <- a$n_ayt * a$ayt_locations * a$ayt_reps
+  plots <- pyt_plots + ayt_plots
   ssd_plants <- lines * max(a$line_generation - 2, 0)
-  cost <- a$n_crosses * a$cross_cost + ssd_plants * a$ssd_cost + plots * a$plot_cost
+  pyt_plot_cost <- if (is.null(a$pyt_plot_cost) || is.na(a$pyt_plot_cost)) a$plot_cost else a$pyt_plot_cost
+  offseason <- offseason_generations(a$line_generation, a$generations_per_year)
+  cost <- a$n_crosses * a$cross_cost + ssd_plants * a$ssd_cost + pyt_plots * pyt_plot_cost +
+    ayt_plots * a$plot_cost + offseason * lines * (a$offseason_cost %||% 0)
   years <- a$line_generation / a$generations_per_year + 2
-  list(lines = lines, plots = plots, cost = cost, years = years)
+  list(lines = lines, plots = plots, cost = cost, years = years, offseason = offseason)
+}
+
+# Nursery generations grown outside the main season (winter nursery, greenhouse).
+offseason_generations <- function(line_generation, generations_per_year) {
+  max(line_generation - ceiling(line_generation / generations_per_year), 0)
 }
 
 #' @export
@@ -124,7 +146,8 @@ sim_check.line_pipeline <- function(object, args, ...) {
 
 line_program <- function(founders, SP, n_parents, n_crosses, progeny_per_cross, line_generation,
                          generations_per_year, pyt_locations, pyt_reps, n_ayt, ayt_locations, ayt_reps,
-                         n_release, cycles, gxe_var, cross_cost, ssd_cost, plot_cost, max_plots, max_cost) {
+                         n_release, cycles, gxe_var, cross_cost, ssd_cost, plot_cost, pyt_plot_cost, pyt_error,
+                         offseason_cost, max_plots, max_cost) {
   a <- as.list(environment())
   r <- line_resources(a)
   tr <- asr_tracker(founders)
@@ -139,7 +162,7 @@ line_program <- function(founders, SP, n_parents, n_crosses, progeny_per_cross, 
     f1 <- AlphaSimR::randCross(parents, nCrosses = n_crosses, nProgeny = 1, simParam = SP)
     lines <- AlphaSimR::self(f1, nProgeny = progeny_per_cross, simParam = SP)
     for (g in seq_len(max(line_generation - 2, 0))) lines <- AlphaSimR::self(lines, simParam = SP)
-    pyt <- AlphaSimR::setPheno(lines, varE = trial_var(pyt_locations, pyt_reps), simParam = SP)
+    pyt <- AlphaSimR::setPheno(lines, varE = pyt_error * trial_var(pyt_locations, pyt_reps), simParam = SP)
     acc <- c(acc, suppressWarnings(stats::cor(AlphaSimR::gv(pyt)[, 1], AlphaSimR::pheno(pyt)[, 1])))
     ayt <- AlphaSimR::selectInd(pyt, n_ayt, use = "pheno", simParam = SP)
     ayt <- AlphaSimR::setPheno(ayt, varE = trial_var(ayt_locations, ayt_reps), simParam = SP)

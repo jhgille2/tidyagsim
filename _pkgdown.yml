@@ -17,11 +17,18 @@ articles:
   - articles/why-simulate
   - articles/replicates
   - articles/choosing-designs
+  - articles/glossary
+  - articles/cheatsheet
 - title: Breeding problems
   navbar: Breeding problems
   desc: Common plant breeding questions, each answered with one simulation study.
   contents:
   - articles/yield-trials
+  - articles/intensity-diversity
+  - articles/winter-nursery
+  - articles/technology-break-even
+  - articles/genomic-selection
+  - articles/backcrossing
   - articles/gene-pyramiding
   - mapping-design
 
@@ -85,6 +92,11 @@ reference:
   - sim_map
   - rank_results
   - extract_sim_result
+- title: Backcrossing and pyramiding
+  desc: Marker-assisted backcrossing, single and multiple introgressions.
+  contents:
+  - backcross_program
+  - bc_expected_recovery
 - title: Mapping population engine
   contents:
   - sim_genetic_map
