@@ -71,3 +71,7 @@ res <- tune_grid(recurrent, sim_replicates(10), grid = 5)
 autoplot(res)
 }
 }
+\seealso{
+The article "Writing your own AlphaSimR program" builds a program step by step:
+\url{https://jhgille2.github.io/tidyagsim/articles/alphasim-programs.html}.
+}

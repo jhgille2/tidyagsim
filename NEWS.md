@@ -20,6 +20,8 @@
   (single or multiple targets, simultaneous or parallel streams), with
   `bc_expected_recovery()` and `min_population_size()` from backcross theory,
   and an article on planning a backcross.
+* Article: writing your own AlphaSimR program with `alphasim_program()`,
+  step by step.
 * Article on balancing an elite program against exotic (wild soja) bridging
   crosses; backcrossing terms in the glossary and cheat sheet.
 * More articles: glossary, cheat sheet, selection intensity versus diversity,

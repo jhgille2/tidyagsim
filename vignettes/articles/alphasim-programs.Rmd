@@ -1,0 +1,306 @@
+---
+title: "Writing your own AlphaSimR program"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 7, fig.height = 4, dpi = 110)
+```
+
+`line_pipeline()` and `backcross_program()` are ready-made, but most real
+questions need a scheme of your own. `alphasim_program()` turns any
+[AlphaSimR](https://cran.r-project.org/package=AlphaSimR) script into
+something tidyagsim can replicate, tune and compare. This article builds one
+step by step. It starts from a plain AlphaSimR script and adds one
+tidyagsim piece at a time, so you can see what each piece does for you.
+
+If you have not used AlphaSimR before, its
+[introductory vignette](https://cran.r-project.org/package=AlphaSimR/vignettes/intro.html)
+explains founders, `SimParam`, crossing and selection. You only need the
+basics here.
+
+```{r setup, message = FALSE}
+library(tidyagsim)
+library(AlphaSimR)
+library(ggplot2)
+theme_set(theme_minimal(base_size = 12))
+```
+
+## Who does what
+
+AlphaSimR simulates the genetics: genomes, crosses, phenotypes and selection.
+tidyagsim runs the *study* around it. You write the breeding scheme once, and
+tidyagsim does the bookkeeping that turns it into a fair experiment.
+
+| You write | tidyagsim does |
+|---|---|
+| One run of your breeding scheme, as a function | Builds new founders for every replicate, from its own seed |
+| The settings you want to compare, marked with `tune()` | Runs every design on every replicate, with the same seeds (paired) |
+| What to report at the end, as a named list | Collects the outcomes and summarizes them with standard errors |
+| (Optional) `tracker$record()` calls each year | Turns the record into gain, gain per year, diversity, cost and trajectories |
+
+## Step 1: a plain AlphaSimR script
+
+Here is a small recurrent selection program in ordinary AlphaSimR. It makes
+50 founders, then runs five cycles of phenotyping, selecting `n_select`
+parents and crossing them.
+
+```{r}
+founder_haplotypes <- quickHaplo(nInd = 50, nChr = 5, segSites = 100, inbred = TRUE)
+SP <- SimParam$new(founder_haplotypes)
+SP$addTraitA(nQtlPerChr = 20)
+SP$setVarE(h2 = 0.3)
+founders <- newPop(founder_haplotypes)
+
+pop <- founders
+n_select <- 10
+for (cycle in 1:5) {
+  pop <- setPheno(pop)
+  parents <- selectInd(pop, n_select)
+  pop <- randCross(parents, nCrosses = 100)
+}
+mean(gv(pop)) - mean(gv(founders))
+```
+
+That is one run, with one setting, of one random founder population. To ask
+"how many parents should I select?" you would need to rerun it many times for
+each candidate, with fresh founders each time, keep the random numbers
+comparable between candidates, and summarize. That bookkeeping is what
+tidyagsim does.
+
+## Step 2: make it a function
+
+Wrap one run in a function. Three rules:
+
+1. The first two arguments are `founders` (an AlphaSimR `Pop`) and `SP` (the
+   `SimParam`). tidyagsim supplies both.
+2. The other arguments are your design settings.
+3. Return a named list of single numbers, the outcomes you want to compare.
+
+```{r}
+recurrent <- function(founders, SP, n_select, cycles = 5) {
+  pop <- founders
+  for (cycle in seq_len(cycles)) {
+    pop <- setPheno(pop)
+    parents <- selectInd(pop, n_select)
+    pop <- randCross(parents, nCrosses = 100)
+  }
+  list(gain = (mean(gv(pop)) - mean(gv(founders))) / sd(gv(founders)))
+}
+```
+
+Nothing tidyagsim-specific is inside yet. You can test it by calling it
+directly with the founders from step 1:
+
+```{r}
+recurrent(founders, SP, n_select = 10)
+```
+
+Do **not** call `set.seed()` inside the function. tidyagsim seeds every
+replicate itself, and that is how paired comparisons work.
+
+## Step 3: turn it into a spec and replicate it
+
+`alphasim_program()` takes the function, values for its settings, and a
+founder recipe from `asr_founders()`. The recipe describes how to make
+founders and the trait. It does not make them yet: every replicate makes its
+own from its own seed.
+
+```{r}
+spec <- alphasim_program(
+  recurrent,
+  n_select = 10,
+  founders = asr_founders(n_founders = 50, n_chr = 5, seg_sites = 100, qtl_per_chr = 20, plot_h2 = 0.3)
+)
+spec
+```
+
+`sim_replicates()` makes the replicate seeds, and `fit_resamples()` runs the
+spec once on each. `collect_metrics()` gives the mean over replicates and its
+Monte Carlo standard error:
+
+```{r}
+res <- fit_resamples(spec, sim_replicates(10, seed = 1), metrics = sim_metric_set(sim_metric("gain", "maximize")))
+collect_metrics(res)
+collect_metrics(res, summarize = FALSE)
+```
+
+`sim_metric("gain", "maximize")` names an outcome your function returns and
+says which direction is better. The direction is used when ranking designs.
+
+Inside your function `SP` is also set globally while it runs, so AlphaSimR
+functions work with or without `simParam = SP`. Scripts copied from the
+AlphaSimR documentation run unchanged.
+
+## Step 4: compare designs with `tune()`
+
+Mark the setting you want to compare with `tune()`, and give `tune_grid()`
+the values to try:
+
+```{r}
+spec <- alphasim_program(
+  recurrent,
+  n_select = tune(),
+  founders = asr_founders(n_founders = 50, n_chr = 5, seg_sites = 100, qtl_per_chr = 20, plot_h2 = 0.3)
+)
+res <- tune_grid(spec, sim_replicates(10, seed = 1), grid = data.frame(n_select = c(2, 5, 10, 20, 40)),
+                 metrics = sim_metric_set(sim_metric("gain", "maximize")))
+collect_metrics(res)
+```
+
+```{r, fig.alt = "Mean gain after five cycles against the number of selected parents, with error bars."}
+autoplot(res)
+```
+
+Every design ran on the same ten founder populations, with the same random
+numbers. Differences between designs therefore come from the designs, not
+from luck, which is why a handful of replicates already separates them. The
+[replicates article](replicates.html) explains this in more detail.
+
+You can also give `tune_grid()` a number instead of a data frame, such as
+`grid = 8`. tidyagsim then picks eight values spread over the range given
+in `params`, for example `params = list(n_select = sim_param(c(2, 40)))`.
+
+## Step 5: record the program with a tracker
+
+Short-term gain is only one outcome. Most studies also care about gain per
+year, remaining diversity and cost, and want to see how the program
+progresses year by year. `asr_tracker()` and `asr_summary()` do that
+bookkeeping:
+
+* `tracker <- asr_tracker(founders)` remembers the founders' mean and
+  variance, so later gains are in founder genetic standard deviations.
+* `tracker$record(pop, year = , cost = )` stores the population's mean,
+  genetic variance and heterozygosity, and adds the cost spent that year. If
+  you pass `released_lines = `, their value becomes the program's release
+  gain.
+* `asr_summary(tracker)` returns the standard outcomes: `release_gain`,
+  `gain_per_year`, `genetic_variance`, `expected_heterozygosity`, `cost`,
+  `gain_per_cost`, `years` and the yearly `trajectory`.
+
+Here is the same program with a tracker, ten cycles, one cycle per year, and
+a cost of 15 dollars a plot:
+
+```{r}
+recurrent <- function(founders, SP, n_select, cycles = 10) {
+  tracker <- asr_tracker(founders)
+  pop <- founders
+  for (cycle in seq_len(cycles)) {
+    pop <- setPheno(pop)
+    parents <- selectInd(pop, n_select)
+    pop <- randCross(parents, nCrosses = 100)
+    tracker$record(pop, year = cycle, cost = nInd(pop) * 15)
+  }
+  asr_summary(tracker)
+}
+
+spec <- alphasim_program(recurrent, n_select = tune(),
+                         founders = asr_founders(n_founders = 50, n_chr = 5, seg_sites = 100, qtl_per_chr = 20))
+res <- tune_grid(spec, sim_replicates(10, seed = 1), grid = data.frame(n_select = c(2, 5, 10, 20, 40)),
+                 control = control_sim(save_outcomes = TRUE))
+collect_metrics(res, type = "wide")[, c("n_select", "release_gain", "genetic_variance", "cost")]
+```
+
+Without a `metrics` argument, an `alphasim_program()` reports
+`release_gain`, `gain_per_year`, `genetic_variance` and `cost`. With
+`control_sim(save_outcomes = TRUE)` the yearly records are kept, and
+`collect_trajectories()` returns them:
+
+```{r, fig.alt = "Mean genetic value over ten years for five numbers of selected parents. Two parents stall early, forty gain slowly, and five to twenty gain most."}
+traj <- collect_trajectories(res)
+avg <- aggregate(mean ~ n_select + year, data = traj, FUN = mean)
+ggplot(avg, aes(year, mean, colour = factor(n_select))) +
+  geom_line(linewidth = 1) +
+  labs(x = "Year", y = "Mean genetic value (founder SDs)", colour = "Parents selected",
+       title = "Too few parents stall, too many gain slowly")
+```
+
+## Step 6: report your own outcomes
+
+Anything else you want to compare, pass to `asr_summary()` as an extra
+argument. Then name it in the metric set. Here we add the accuracy of the
+last round of selection and the genetic value of the single best plant:
+
+```{r}
+recurrent <- function(founders, SP, n_select, cycles = 10) {
+  tracker <- asr_tracker(founders)
+  pop <- founders
+  for (cycle in seq_len(cycles)) {
+    pop <- setPheno(pop)
+    accuracy <- cor(pheno(pop)[, 1], gv(pop)[, 1])
+    parents <- selectInd(pop, n_select)
+    pop <- randCross(parents, nCrosses = 100)
+    tracker$record(pop, year = cycle, cost = nInd(pop) * 15)
+  }
+  best <- (max(gv(pop)) - tracker$base$mean) / tracker$base$sd
+  asr_summary(tracker, accuracy = accuracy, best_plant = best)
+}
+
+spec <- alphasim_program(recurrent, n_select = tune(),
+                         founders = asr_founders(n_founders = 50, n_chr = 5, seg_sites = 100, qtl_per_chr = 20))
+res <- tune_grid(spec, sim_replicates(10, seed = 1), grid = data.frame(n_select = c(5, 10, 40)),
+                 metrics = sim_metric_set(release_gain, accuracy, sim_metric("best_plant", "maximize")))
+collect_metrics(res, type = "wide")[, c("n_select", "release_gain", "accuracy", "best_plant")]
+```
+
+`accuracy` is a built-in metric, so its name is enough. `best_plant` is new,
+so `sim_metric()` declares it. Selection accuracy falls as selection gets
+stronger, because strongly selected populations lose genetic variance. (With
+only two parents, the population becomes fixed within ten cycles, so
+accuracy cannot even be computed. That is why this grid starts at five.)
+
+## Step 7: assumptions, ranges and impossible designs
+
+Three more arguments of `alphasim_program()` round it out.
+
+**Assumptions as scenarios.** Every `asr_founders()` field, such as
+`plot_h2` or `qtl_per_chr`, can also be set from the study. To see whether
+the best design depends on heritability, run it under two scenarios:
+
+```{r}
+res <- tune_grid(spec, sim_replicates(10, seed = 1, scenarios = sim_scenarios(plot_h2 = c(0.1, 0.5))),
+                 grid = data.frame(n_select = c(5, 10, 40)), metrics = sim_metric_set(release_gain))
+collect_metrics(res, type = "wide")[, c(".scenario", "n_select", "release_gain", "release_gain_se")]
+```
+
+**Ranges.** `params` gives the range of each tuned setting, for generated
+grids, `tune_race()` and `tune_bayes()`:
+
+```{r, eval = FALSE}
+spec <- alphasim_program(recurrent, n_select = tune(),
+                         params = list(n_select = sim_param(c(2L, 60L), label = "Parents selected")))
+res <- tune_bayes(spec, sim_replicates(10), initial = 5, iter = 10)
+```
+
+**Impossible designs.** `check` is a function of the settings that returns
+`NULL` when a design can run, or a reason when it can't. tidyagsim skips
+those designs and records the reason, which `collect_notes()` shows:
+
+```{r, eval = FALSE}
+spec <- alphasim_program(recurrent, n_select = tune(),
+                         check = function(n_select) if (n_select > 100) "Only 100 plants per cycle.")
+```
+
+## Checklist
+
+* The function starts with `founders, SP`, and returns a named list of single
+  numbers (or `asr_summary()`).
+* No `set.seed()` inside. Let the replicates do the seeding.
+* Every setting you want to compare is an argument, and marked `tune()` in
+  `alphasim_program()`.
+* Extra traits, correlations or SNP chips go in `asr_founders(setup = )`,
+  a function of `SP`. Your own marker data go in
+  `asr_founders(haplotypes = )`.
+* Long studies: `control_sim(parallel = TRUE)` runs designs in parallel, and
+  `cache = "folder"` lets an interrupted study resume. `write_slurm_array()`
+  writes the files for a computing cluster.
+
+## Worked examples
+
+These articles each build a full program with `alphasim_program()`:
+
+* [Genomic or phenotypic selection?](genomic-selection.html): an RR-BLUP
+  screen, a training set that grows each cycle, and genotyping cost as a
+  scenario.
+* [How much of the program should go to exotic germplasm?](introgression.html):
+  two germplasm pools, bridging crosses and reserved parent slots, over 15
+  cycles.

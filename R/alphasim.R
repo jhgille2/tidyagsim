@@ -144,6 +144,8 @@ with_global_sp <- function(SP, expr) {
 #'   when a design is feasible or a reason string when it is not.
 #' @param metrics Optional default [sim_metric_set()].
 #' @return An `alphasim_program` spec.
+#' @seealso The article "Writing your own AlphaSimR program" builds a program step by step:
+#'   \url{https://jhgille2.github.io/tidyagsim/articles/alphasim-programs.html}.
 #' @examples
 #' \dontrun{
 #' recurrent <- alphasim_program(
