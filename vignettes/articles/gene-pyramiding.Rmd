@@ -175,8 +175,11 @@ show_best(res, metric = "cost", constraints = list(success = 0.9), scenario = "l
   scenarios.
 * Add genes. Extend the position lists and the F1 haplotypes, and the rest of
   the code follows.
-* Add a backcross generation, or change how many F2 plants advance in the
-  two-step strategy, then make that a `tune()` argument too.
+* Change how many F2 plants advance in the two-step strategy, then make that
+  a `tune()` argument too.
+* To pyramid genes into an elite variety by backcrossing, with background
+  selection and linkage drag, use `backcross_program()`. The
+  [backcrossing article](backcrossing.html) shows how.
 * For pyramiding inside a whole breeding program, with selection on yield as
   well, use `alphasim_program()`. AlphaSimR's `SP$addSnpChip()` and
   `pullSnpGeno()` give you markers.

@@ -28,6 +28,7 @@ articles:
   - articles/winter-nursery
   - articles/technology-break-even
   - articles/genomic-selection
+  - articles/backcrossing
   - articles/gene-pyramiding
   - mapping-design
 
@@ -91,6 +92,11 @@ reference:
   - sim_map
   - rank_results
   - extract_sim_result
+- title: Backcrossing and pyramiding
+  desc: Marker-assisted backcrossing, single and multiple introgressions.
+  contents:
+  - backcross_program
+  - bc_expected_recovery
 - title: Mapping population engine
   contents:
   - sim_genetic_map

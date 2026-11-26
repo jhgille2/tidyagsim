@@ -75,6 +75,10 @@ tune_bayes(recurrent, sim_replicates(10), constraints = list(genetic_variance = 
   (F2, recombinant inbred lines, BC*s*F*t*, nested association mapping,
   advanced-backcross NAM and 4- or 8-way MAGIC), with genome scans,
   permutation thresholds, costs and time to results.
+* **`backcross_program()`**: marker-assisted backcrossing of one or more
+  target genes, with foreground, flanking-marker and background selection,
+  simultaneous or parallel (pyramiding) strategies, and recurrent parent
+  recovery, linkage drag, time and genotyping cost as metrics.
 * **`sim_function()`**: any R function of its arguments and a seed.
 * **`breeding_program()`**: a breedsim flowchart (from the desktop app),
   tuned by `"stage.field"` paths.
