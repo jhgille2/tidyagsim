@@ -174,3 +174,33 @@ front.](glossary_files/figure-html/unnamed-chunk-3-1.png)
 - **Gain per year, gain per cost**: Genetic gain divided by the years or
   money it took. They are the fair way to compare programs that run at
   different speeds or budgets.
+
+## Backcrossing terms
+
+- **Recurrent parent (RP), donor**: In a backcross, the elite line you
+  keep crossing back to is the recurrent parent. The donor supplies the
+  gene you want to move in.
+
+- **Foreground, recombinant and background selection**: Marker selection
+  in three stages: keep plants carrying the target gene, then plants
+  whose flanking markers already come from the RP, then plants with the
+  most RP alleles across the genome.
+
+- **Linkage drag**: The donor DNA that travels with the target gene
+  because it sits close by. Flanking markers near the target cut it
+  down.
+
+- **RP genome recovery**:
+
+  The share of the converted line’s genome that comes from the recurrent
+  parent. Without background selection it averages 1 − 0.5^(t+1) after
+  *t* backcrosses.
+
+- **Pyramiding**: Combining several target genes in one line. They can
+  be brought in together in one backcross stream, or separately in
+  parallel streams that are crossed together at the end.
+
+- **Introgression, bridging population**: Bringing useful variation from
+  unadapted germplasm (such as wild soybean) into an elite program. A
+  bridging population crosses exotic and elite lines and selects among
+  their progeny before the best go on into the elite crossing block.

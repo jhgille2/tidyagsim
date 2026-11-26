@@ -9,6 +9,7 @@ articles:
   articles/genomic-selection: genomic-selection.html
   articles/glossary: glossary.html
   articles/intensity-diversity: intensity-diversity.html
+  articles/introgression: introgression.html
   mapping-design: mapping-design.html
   articles/replicates: replicates.html
   articles/technology-break-even: technology-break-even.html
@@ -16,7 +17,7 @@ articles:
   articles/why-simulate: why-simulate.html
   articles/winter-nursery: winter-nursery.html
   articles/yield-trials: yield-trials.html
-last_built: 2026-11-26T01:13Z
+last_built: 2026-11-26T02:42Z
 urls:
   reference: https://jhgille2.github.io/tidyagsim/reference
   article: https://jhgille2.github.io/tidyagsim/articles

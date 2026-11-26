@@ -35,6 +35,12 @@ spec <- sim_function(function(x, seed) list(y = rnorm(1, x)), x = tune(),
 
 # Mapping populations
 spec <- mapping_population(type = "RIL", lines = tune(), locations = tune())
+
+# Marker-assisted backcrossing and pyramiding
+spec <- backcross_program(n_plants = tune(), flank_cM = tune(), strategy = tune(),
+                          targets = data.frame(chr = c(1, 3), pos = c(50, 30)))
+bc_expected_recovery(3)                 # 1 - 0.5^(3 + 1)
+min_population_size(1 / 16, prob = 0.99)  # plants to find a 1-in-16 genotype
 ```
 
 ## 2. Choose ranges (optional)
@@ -65,7 +71,9 @@ metrics <- sim_metric_set(release_gain, sim_metric("ayt_accuracy", "maximize"))
 Built-in breeding metrics: `release_gain`, `gain_per_year`,
 `gain_per_cost`, `genetic_variance`, `expected_heterozygosity`,
 `accuracy`, `lines`, `plots`, `cost`, `years`. Mapping: `power`,
-`other_peaks`, `location_error`, `support_interval`.
+`other_peaks`, `location_error`, `support_interval`. Backcrossing:
+`success`, `rp_recovery`, `linkage_drag`, `plants`, `datapoints`,
+`cost`, `years`.
 
 ## 5. Run
 

@@ -33,6 +33,8 @@ study.
   selection?](https://jhgille2.github.io/tidyagsim/articles/genomic-selection.md):
 - [Planning a marker-assisted
   backcross](https://jhgille2.github.io/tidyagsim/articles/backcrossing.md):
+- [How much of the program should go to exotic
+  germplasm?](https://jhgille2.github.io/tidyagsim/articles/introgression.md):
 - [Pyramiding resistance genes with
   markers](https://jhgille2.github.io/tidyagsim/articles/gene-pyramiding.md):
 - [Designing a QTL mapping

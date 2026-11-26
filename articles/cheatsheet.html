@@ -48,6 +48,7 @@
     <li><a class="dropdown-item" href="../articles/technology-break-even.html">When does a new phenotyping tool pay off?</a></li>
     <li><a class="dropdown-item" href="../articles/genomic-selection.html">Genomic or phenotypic selection?</a></li>
     <li><a class="dropdown-item" href="../articles/backcrossing.html">Planning a marker-assisted backcross</a></li>
+    <li><a class="dropdown-item" href="../articles/introgression.html">How much of the program should go to exotic germplasm?</a></li>
     <li><a class="dropdown-item" href="../articles/gene-pyramiding.html">Pyramiding resistance genes with markers</a></li>
     <li><a class="dropdown-item" href="../articles/mapping-design.html">Designing a QTL mapping population</a></li>
   </ul>
@@ -114,7 +115,13 @@ in the order you write them.</p>
 <span>                     params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="../reference/sim_param.html">sim_param</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Mapping populations</span></span>
-<span><span class="va">spec</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mapping_population.html">mapping_population</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"RIL"</span>, lines <span class="op">=</span> <span class="fu"><a href="https://hardhat.tidymodels.org/reference/tune.html" class="external-link">tune</a></span><span class="op">(</span><span class="op">)</span>, locations <span class="op">=</span> <span class="fu"><a href="https://hardhat.tidymodels.org/reference/tune.html" class="external-link">tune</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">spec</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mapping_population.html">mapping_population</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"RIL"</span>, lines <span class="op">=</span> <span class="fu"><a href="https://hardhat.tidymodels.org/reference/tune.html" class="external-link">tune</a></span><span class="op">(</span><span class="op">)</span>, locations <span class="op">=</span> <span class="fu"><a href="https://hardhat.tidymodels.org/reference/tune.html" class="external-link">tune</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Marker-assisted backcrossing and pyramiding</span></span>
+<span><span class="va">spec</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/backcross_program.html">backcross_program</a></span><span class="op">(</span>n_plants <span class="op">=</span> <span class="fu"><a href="https://hardhat.tidymodels.org/reference/tune.html" class="external-link">tune</a></span><span class="op">(</span><span class="op">)</span>, flank_cM <span class="op">=</span> <span class="fu"><a href="https://hardhat.tidymodels.org/reference/tune.html" class="external-link">tune</a></span><span class="op">(</span><span class="op">)</span>, strategy <span class="op">=</span> <span class="fu"><a href="https://hardhat.tidymodels.org/reference/tune.html" class="external-link">tune</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>                          targets <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>chr <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">3</span><span class="op">)</span>, pos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">50</span>, <span class="fl">30</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/bc_expected_recovery.html">bc_expected_recovery</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span>                 <span class="co"># 1 - 0.5^(3 + 1)</span></span>
+<span><span class="fu"><a href="../reference/bc_expected_recovery.html">min_population_size</a></span><span class="op">(</span><span class="fl">1</span> <span class="op">/</span> <span class="fl">16</span>, prob <span class="op">=</span> <span class="fl">0.99</span><span class="op">)</span>  <span class="co"># plants to find a 1-in-16 genotype</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="choose-ranges-optional">2. Choose ranges (optional)<a class="anchor" aria-label="anchor" href="#choose-ranges-optional"></a>
@@ -143,7 +150,10 @@ in the order you write them.</p>
 <code>accuracy</code>, <code>lines</code>, <code>plots</code>,
 <code>cost</code>, <code>years</code>. Mapping: <code>power</code>,
 <code>other_peaks</code>, <code>location_error</code>,
-<code>support_interval</code>.</p>
+<code>support_interval</code>. Backcrossing: <code>success</code>,
+<code>rp_recovery</code>, <code>linkage_drag</code>,
+<code>plants</code>, <code>datapoints</code>, <code>cost</code>,
+<code>years</code>.</p>
 </div>
 <div class="section level2">
 <h2 id="run">5. Run<a class="anchor" aria-label="anchor" href="#run"></a>
